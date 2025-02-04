@@ -1,0 +1,22 @@
+# Archivos y carpetas de Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de entorno
+.env
+
+# Archivos y carpetas de Django
+db.sqlite3
+/staticfiles/
+/media/
+
+# Archivos de dependencias
+*.log
+*.sqlite3
+*.pyc
+.DS_Store
+
+# Archivos de Docker
+postgres_data/
