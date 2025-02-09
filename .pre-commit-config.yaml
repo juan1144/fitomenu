@@ -1,0 +1,91 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+default_language_version:
+  python: python3.13
+exclude: >
+  (?x)^(
+      apps/.*/migrations/.* |
+      manage.py
+  )$
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: >
+          (?x)^(
+              static/.*\.min\.(js|css)$|
+              static/.*/bootstrap/.*|
+              static/.*/htmx/.*
+          )$
+      - id: end-of-file-fixer
+        exclude: >
+          (?x)^(
+              static/.*\.min\.(js|css)$|
+              static/.*/bootstrap/.*|
+              static/.*/htmx/.*
+          )$
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+        exclude: >
+          (?x)^(
+            static/.*\.map$|
+            static/.*\.min\.(js|css)$|
+            static/.*/bootstrap/.*|
+            static/.*/htmx/.*|
+            static/fonts/.*\.ttf$
+          )$
+      - id: check-merge-conflict
+      - id: check-docstring-first
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.5
+    hooks:
+      - id: ruff # Run the linter.
+      - id: ruff-format # Run the formatter.
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.19.1
+    hooks:
+      - id: pyupgrade
+        args:
+          - --py312-plus
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.23.1
+    hooks:
+      - id: django-upgrade
+        args:
+          - --target-version=5.1
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.20.0
+    hooks:
+      - id: eslint
+        files: ^static/
+        types: [ javascript, ts ]
+        exclude: >
+          (?x)^(
+              static/.*\.min\.(js|css)$|
+              static/.*/bootstrap/.*|
+              static/.*/htmx/.*
+              static/src/.*
+          )$
+        args:
+          - --fix
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+  - repo: local
+    hooks:
+      - id: check-novalidate
+        name: Check for <form novalidate>
+        description: Check for the HTML form attribute `novalidate`.
+        language: pygrep
+        entry: novalidate
+        types: [ html ]
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-use-type-annotations
+      - id: python-check-blanket-noqa
+      - id: python-check-blanket-type-ignore

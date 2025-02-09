@@ -1,22 +1,35 @@
-# Archivos y carpetas de Python
-venv/
+# Python-generated files
 __pycache__/
-*.pyc
-*.pyo
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
-# Archivos de entorno
+# Virtual environments
+.venv
+venv
+
+# Django
+media/*
+logs/
+
+# Environments
+env.toml
 .env
 
-# Archivos y carpetas de Django
-db.sqlite3
-/staticfiles/
-/media/
+# IDEs
+.idea/
+.vscode/
 
-# Archivos de dependencias
-*.log
-*.sqlite3
-*.pyc
-.DS_Store
+## MyPy
+.mypy_cache/
 
-# Archivos de Docker
-postgres_data/
+## NPM
+node_modules/
+
+## Docker
+docker
+
+## SQL
+sql

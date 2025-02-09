@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:15
+    image: postgres:17.2
     container_name: fitomenu_db
     restart: always
     environment:
@@ -10,9 +8,11 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DATABASE_HOST}:${DATABASE_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - ./docker/postgres/data:/var/lib/postgresql/data
+      - ./sql/docker:/docker-entrypoint-initdb.d
+    command:
+      - "postgres"
+      - "-c"
+      - "timezone=America/El_Salvador"
