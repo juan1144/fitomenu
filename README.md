@@ -13,3 +13,9 @@ sudo dnf install \
   python3-devel \
   libpq-devel
 ```
+
+## SCSS to CSS Compiler comand
+```shell
+#COMPILER
+npm run watch-css
+```

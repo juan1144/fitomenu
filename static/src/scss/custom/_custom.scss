@@ -1,0 +1,97 @@
+/*
+  GENERAL
+*/
+
+.dx-fit-to-content {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.dx-no-hover {
+  box-shadow: none !important;
+}
+
+.dx-hover:hover {
+  background-color: rgba(var(--bs-emphasis-color-rgb), 0.075);
+}
+
+.dx-w-navbar {
+  width: 12rem;
+}
+
+.dx-w-navbar {
+  width: 12rem;
+}
+
+.dx-bg-navbar {
+  background-color: #ffa600;
+}
+
+/* For mobile devices: */
+[class*='dx-w-sidebar-'] {
+  width: 100%;
+}
+
+/* For small devices (landscape phone, 576px and up) */
+@media (min-width: 768px) {
+  .dx-w-sidebar-md {
+    width: 12rem;
+    height: 100vh;
+  }
+}
+
+/*
+  Invalid feedback
+ */
+
+//noinspection SassScssResolvedByNameOnly
+input:invalid {
+  border-color: $danger;
+}
+
+//noinspection SassScssResolvedByNameOnly
+input:invalid:focus {
+  border-color: $danger;
+  color: $danger;
+}
+
+//noinspection SassScssResolvedByNameOnly
+select:invalid {
+  border-color: $danger;
+}
+
+//noinspection SassScssResolvedByNameOnly
+select:invalid:focus {
+  border-color: $danger;
+}
+
+//noinspection SassScssResolvedByNameOnly
+textarea:invalid {
+  border-color: $danger;
+}
+
+//noinspection SassScssResolvedByNameOnly
+textarea:invalid:focus {
+  border-color: $danger;
+  color: $danger;
+}
+
+
+
+// Applying all font for specific sections
+body {
+  font-family: $font-family-sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-headings;
+}
+
+.special-section {
+  font-family: $font-family-special;
+}
+
+button, .btn {
+  font-family: $font-family-sans-serif;
+  font-weight: bold;
+}
