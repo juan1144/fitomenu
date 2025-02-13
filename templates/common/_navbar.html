@@ -1,0 +1,33 @@
+<nav class="navbar navbar-expand-lg dx-bg-navbar py-1">
+  <div class="container-fluid ps-0">
+    <!-- Sidebar toggle -->
+    <div class="d-flex flex-row dx-w-navbar fw-bold">
+      <button id="sidebar-toggle-btn"
+              type="button"
+              class="btn border-0 text-white"
+              data-bs-toggle="collapse"
+              data-bs-target="#sidebar"
+              aria-expanded="true"
+              aria-controls="sidebar">
+        <i class="bi bi-list"></i>
+      </button>
+      <!-- Branding -->
+{#      <a class="navbar-brand ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}" href="{% url 'core:index' %}">#}
+      <a class="navbar-brand ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}">
+        Pollo Fito Menú
+      </a>
+    </div>
+    <!-- User dropdown -->
+    <div class="dropdown me-2">
+      <button class="btn text-white btn-sm dropdown-toggle py-1 border-0"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">opciones</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>{% csrf_token %}
+          <button class="dropdown-item">Cerrar sesión</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

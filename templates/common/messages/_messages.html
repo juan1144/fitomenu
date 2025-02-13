@@ -1,0 +1,13 @@
+<div class="toast-container position-fixed top top-0 end-0 py-3 px-2"
+     style="z-index: 11"
+     id="messages">
+  {% include 'common/messages/_message.html' with message_id='base-message' %}
+  {% include 'common/messages/_request.html' %}
+  {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+      {% include 'common/messages/_message.html' with bg='danger' %}
+    {% else %}
+      {% include 'common/messages/_message.html' with bg=message.level_tag %}
+    {% endif %}
+  {% endfor %}
+</div>

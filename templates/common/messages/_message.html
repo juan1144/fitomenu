@@ -1,0 +1,10 @@
+<div class="toast align-items-center{% if bg %} bg-{{ bg }} text-bg-{{ bg }}{% endif %}"
+     {% if message_id %}id="{{ message_id }}" {% endif %}
+     role="alert">
+  <div class="d-flex">
+    <div class="toast-body" id="message-body">{{ message }}</div>
+    <button type="button"
+            class="btn-close me-2 m-auto btn-close-white"
+            data-bs-dismiss="toast"></button>
+  </div>
+</div>
