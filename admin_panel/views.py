@@ -16,7 +16,8 @@ def lista_productos(request):
     return render(
         request,
         "admin_panel/lista.html",
-        {"productos": productos},
+        {"productos": productos,
+         "show_sidebar": False,},
     )
 
 def producto_form(request):
@@ -32,7 +33,7 @@ def producto_crear(request):
     else:
         form = ProductoForm()
 
-    return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Agregar Producto"})
+    return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Agregar Producto", "show_sidebar": False,})
 
 def producto_editar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
@@ -45,7 +46,7 @@ def producto_editar(request, producto_id):
     else:
         form = ProductoForm(instance=producto)
 
-    return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Editar Producto"})
+    return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Editar Producto", "show_sidebar": False,})
 
 def producto_eliminar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)

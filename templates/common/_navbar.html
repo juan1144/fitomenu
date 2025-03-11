@@ -2,7 +2,8 @@
   <div class="container-fluid ps-0">
     <!-- Sidebar toggle -->
     <div class="d-flex flex-row dx-w-navbar fw-bold">
-      <button id="sidebar-toggle-btn"
+        {% if show_sidebar %}
+            <button id="sidebar-toggle-btn"
               type="button"
               class="btn border-0 text-white"
               data-bs-toggle="collapse"
@@ -11,6 +12,7 @@
               aria-controls="sidebar">
         <i class="bi bi-list"></i>
       </button>
+        {% endif %}
       <!-- Branding -->
 {#      <a class="navbar-brand ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}" href="{% url 'core:index' %}">#}
       <a class="navbar-brand ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}">
@@ -24,9 +26,18 @@
               data-bs-toggle="dropdown"
               aria-expanded="false">opciones</button>
       <ul class="dropdown-menu dropdown-menu-end">
-        <li>{% csrf_token %}
-          <button class="dropdown-item">Cerrar sesión</button>
-        </li>
+          {% if show_sidebar %}
+              <li>{% csrf_token %}
+                  <button class="dropdown-item">Cerrar sesión</button>
+                </li>
+          {% else %}
+              <li>{% csrf_token %}
+                <button class="dropdown-item">Panel de cocina</button>
+              </li>
+              <li>{% csrf_token %}
+                <button class="dropdown-item">Menú</button>
+              </li>
+          {% endif %}
       </ul>
     </div>
   </div>
