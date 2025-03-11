@@ -14,10 +14,10 @@
         </a>
     </div>
 
-    <table class="table table-borderless">
+    <table class="table table-borderless table-responsive">
         <thead>
             <tr>
-                <th>Imagen</th>
+                <th class="d-none d-sm-block">Imagen</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
@@ -26,7 +26,7 @@
         <tbody>
             {% for producto in productos %}
             <tr>
-                <td>
+                <td class="d-none d-sm-block">
                     {% if producto.imagen %}
                         <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-thumbnail" width="100">
                     {% else %}
@@ -57,6 +57,35 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if productos.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if productos.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; Primera</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ productos.previous_page_number }}">Anterior</a>
+                </li>
+                {% endif %}
+    
+                <li class="page-item active">
+                    <span class="page-link">
+                        Página {{ productos.number }} de {{ productos.paginator.num_pages }}
+                    </span>
+                </li>
+    
+                {% if productos.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ productos.next_page_number }}">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ productos.paginator.num_pages }}">Última &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 </div>
 
 <!-- Incluir el modal genérico -->

@@ -2,12 +2,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
+from django.core.paginator import Paginator
 from .models import Producto
 from .forms import ProductoForm
 
 
 def lista_productos(request):
-    productos = Producto.objects.filter(disponible=True)
+    productos_list = Producto.objects.filter(disponible=True)
+    paginator = Paginator(productos_list, 5)
+
+    page_number = request.GET.get("page")
+    productos = paginator.get_page(page_number)
     return render(
         request,
         "admin_panel/lista.html",
