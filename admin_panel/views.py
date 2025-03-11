@@ -1,4 +1,7 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+
 from .models import Producto
 from .forms import ProductoForm
 
@@ -8,11 +11,13 @@ def lista_productos(request):
     return render(
         request,
         "admin_panel/lista.html",
-        {"productos": productos},  # Get products from database
+        {"productos": productos},
     )
 
+def producto_form(request):
+    form = ProductoForm()
+    return render(request, "admin_panel/producto_form.html", {"form": form})
 
-# Vista para crear un nuevo producto
 def producto_crear(request):
     if request.method == "POST":
         form = ProductoForm(request.POST, request.FILES)
@@ -24,8 +29,6 @@ def producto_crear(request):
 
     return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Agregar Producto"})
 
-
-# Vista para editar un producto existente
 def producto_editar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
@@ -39,13 +42,9 @@ def producto_editar(request, producto_id):
 
     return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Editar Producto"})
 
-
-# Vista para eliminar un producto
 def producto_eliminar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
     if request.method == "POST":
         producto.delete()
-        return redirect("admin_panel:lista_productos")
-
-    return render(request, "admin_panel/producto_confirm_delete.html", {"producto": producto})
+        return HttpResponseRedirect(reverse('admin_panel:lista_productos'))

@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import lista_productos, producto_eliminar, producto_editar, producto_crear
+from .views import lista_productos, producto_eliminar, producto_editar, producto_crear, producto_form
 
 app_name = "admin_panel"
 
 urlpatterns = [
     path("productos/", lista_productos, name="lista_productos"),
+    path("productos/form/", producto_form, name="producto_form"),
     path("productos/agregar/", producto_crear, name="producto_crear"),
     path("productos/editar/<int:producto_id>/", producto_editar, name="producto_editar"),
     path("productos/eliminar/<int:producto_id>/", producto_eliminar, name="producto_eliminar"),
