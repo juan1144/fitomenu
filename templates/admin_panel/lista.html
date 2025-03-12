@@ -3,6 +3,7 @@
 {% block title %}Lista de Productos - FitoMenu{% endblock %}
 
 {% block content %}
+    {% include 'admin_panel/categorias_modal.html' %}
 <div class="container">
     <h1 class="text-center my-4">Administración de Productos</h1>
 
@@ -12,6 +13,9 @@
             <i class="bi bi-plus-lg"></i>
             Agregar
         </a>
+        <button class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#categoriasModal">
+            <i class="bi bi-tags"></i> Administrar Categorías
+        </button>
     </div>
 
     <table class="table table-borderless table-responsive">
@@ -114,6 +118,96 @@
             }
         });
     });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".eliminar-categoria").forEach(button => {
+        button.addEventListener("click", function() {
+            let categoriaId = this.dataset.id;
+            let url = `/admin_panel/categorias/eliminar/${categoriaId}/`;
+
+            fetch(url, {
+                method: "POST",
+                headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();  // 🔄 Recargar la página si la eliminación fue exitosa
+                } else {
+                    alert(data.error);  // 🔴 Mostrar mensaje si no se puede eliminar
+                }
+            });
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("agregarCategoriaForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("/admin_panel/categorias/agregar/", {
+            method: "POST",
+            body: formData,
+            headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();  // 🔄 Recargar para ver la nueva categoría
+            } else {
+                alert("Error: " + data.error);  // 🔴 Mostrar error exacto
+            }
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Manejar cambios en la disponibilidad de categorías
+    document.querySelectorAll(".categoria-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", function() {
+            let categoriaId = this.dataset.id;
+            let guardarBtn = document.querySelector(`.guardar-categoria[data-id='${categoriaId}']`);
+
+            // Mostrar el botón si se cambia el estado
+            if (guardarBtn) {
+                guardarBtn.classList.remove("d-none");
+            }
+        });
+    });
+
+    // Manejar el clic en el botón de guardar
+    document.querySelectorAll(".guardar-categoria").forEach(button => {
+        button.addEventListener("click", function() {
+            let categoriaId = this.dataset.id;
+            let checkbox = document.querySelector(`.categoria-checkbox[data-id='${categoriaId}']`);
+            let nuevoEstado = checkbox.checked; // True si está marcado, False si no
+
+            let url = `/admin_panel/categorias/cambiar-estado/${categoriaId}/`;
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ disponible: nuevoEstado })  // 🔹 Enviar el nuevo estado
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.classList.add("d-none");  // 🔹 Ocultar el botón después de guardar
+                } else {
+                    alert("Error al actualizar la categoría.");
+                }
+            });
+        });
+    });
+});
 </script>
 
 {% endblock %}
