@@ -1,0 +1,57 @@
+<div class="modal fade" id="categoriasModal" tabindex="-1" aria-labelledby="categoriasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoriasModalLabel">Administrar Categorías</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Lista de categorías -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Disponible</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria in categorias %}
+                        <tr>
+                            <td>{{ categoria.nombre }}</td>
+                            <td>
+                                <input type="checkbox" class="categoria-checkbox"
+                                    data-id="{{ categoria.id }}"
+                                    {% if categoria.disponible %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <button class="btn btn-success btn-sm guardar-categoria d-none"
+                                        data-id="{{ categoria.id }}">
+                                    <i class="bi bi-floppy"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm eliminar-categoria" data-id="{{ categoria.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center">No hay categorías registradas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Formulario para agregar nueva categoría -->
+                <form id="agregarCategoriaForm">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="nombre" class="form-control" placeholder="Nueva categoría" required>
+                        <button type="submit" class="btn btn-success">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
