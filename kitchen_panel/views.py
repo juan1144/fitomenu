@@ -57,3 +57,7 @@ def update_order_status(request, pedido_id):
 
     except json.JSONDecodeError:
         return JsonResponse({"error": "Formato JSON inválido"}, status=400)
+
+def kitchen_panel(request):
+    return render(request, "kitchen_panel/panel.html",
+                  {"page_title": "Panel de Cocina", "show_sidebar": False})

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">📌 Panel de Cocina</h2>
+
+    <div id="orders-container" class="row g-3">
+        <!-- Aquí se mostrarán los pedidos dinámicamente -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function fetchOrders() {
+        $.get("/kitchen/orders/", function (data) {
+            let container = $("#orders-container");
+            container.empty();
+
+            if (data.pedidos.length === 0) {
+                container.append('<div class="col-12 text-center"><h5>No hay pedidos en preparación</h5></div>');
+                return;
+            }
+
+            data.pedidos.forEach(pedido => {
+                let detallesHtml = pedido.detalles.map(item => 
+                    `<li>${item.cantidad}x ${item.producto} - $${item.precio_total}</li>`
+                ).join("");
+
+                let cardHtml = `
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Mesa ${pedido.numero_mesa}</h5>
+                                <ul class="list-unstyled">${detallesHtml}</ul>
+                                <p><strong>Total:</strong> $${pedido.precio_total}</p>
+                                <p><strong>Notas:</strong> ${pedido.notas || "Sin notas"}</p>
+                                <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${pedido.id}, 'entregado')">✅ Entregado</button>
+                                <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${pedido.id}, 'cancelado')">❌ Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.append(cardHtml);
+            });
+        });
+    }
+
+    function updateOrderStatus(pedidoId, estado) {
+        $.ajax({
+            url: `/kitchen/orders/${pedidoId}/update/`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ estado: estado }),
+            success: function () {
+                fetchOrders();  // Recargar la lista de pedidos después de la actualización
+            },
+            error: function () {
+                alert("Error al actualizar el pedido.");
+            }
+        });
+    }
+
+    // Cargar pedidos automáticamente cada 10 segundos
+    fetchOrders();
+    setInterval(fetchOrders, 10000);
+</script>
+{% endblock %}
