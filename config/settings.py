@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Define created apps here
     "admin_panel",
+    "menu",
 ]
 
 MIDDLEWARE = [
