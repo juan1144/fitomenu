@@ -5,10 +5,7 @@
 {% block content %}
     {% include 'admin_panel/categorias_modal.html' %}
 <div class="container">
-    <h1 class="text-center my-4">Administración de Productos</h1>
-
     <div class="d-flex justify-content-end mb-3">
-        <!-- Botón para abrir el modal para agregar un producto -->
         <a href="{% url 'admin_panel:producto_crear' %}" class="btn btn-success btn-sm">
             <i class="bi bi-plus-lg"></i>
             Agregar producto
@@ -92,7 +89,6 @@
     {% endif %}
 </div>
 
-<!-- Incluir el modal genérico -->
 {% include 'common/_modal.html' %}
 
 <script>
@@ -133,9 +129,9 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();  // 🔄 Recargar la página si la eliminación fue exitosa
+                    location.reload();
                 } else {
-                    alert(data.error);  // 🔴 Mostrar mensaje si no se puede eliminar
+                    alert(data.error);
                 }
             });
         });
@@ -157,9 +153,9 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload();  // 🔄 Recargar para ver la nueva categoría
+                location.reload();
             } else {
-                alert("Error: " + data.error);  // 🔴 Mostrar error exacto
+                alert("Error: " + data.error);
             }
         });
     });
@@ -167,13 +163,10 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Manejar cambios en la disponibilidad de categorías
     document.querySelectorAll(".categoria-checkbox").forEach(checkbox => {
         checkbox.addEventListener("change", function() {
             let categoriaId = this.dataset.id;
             let guardarBtn = document.querySelector(`.guardar-categoria[data-id='${categoriaId}']`);
-
-            // Mostrar el botón si se cambia el estado
             if (guardarBtn) {
                 guardarBtn.classList.remove("d-none");
             }
@@ -185,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
         button.addEventListener("click", function() {
             let categoriaId = this.dataset.id;
             let checkbox = document.querySelector(`.categoria-checkbox[data-id='${categoriaId}']`);
-            let nuevoEstado = checkbox.checked; // True si está marcado, False si no
+            let nuevoEstado = checkbox.checked;
 
             let url = `/admin_panel/categorias/cambiar-estado/${categoriaId}/`;
 
@@ -195,12 +188,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ disponible: nuevoEstado })  // 🔹 Enviar el nuevo estado
+                body: JSON.stringify({ disponible: nuevoEstado })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    button.classList.add("d-none");  // 🔹 Ocultar el botón después de guardar
+                    button.classList.add("d-none");
                 } else {
                     alert("Error al actualizar la categoría.");
                 }
