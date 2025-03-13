@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # Define created apps here
     "admin_panel",
     "menu",
+    "kitchen_panel",
 ]
 
 MIDDLEWARE = [
