@@ -17,6 +17,11 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Pedido {self.id} - Mesa {self.numero_mesa} - {self.get_estado_display()}"
+    
+    def actualizar_precio_total(self):
+        total = self.detalles.aggregate(total=models.Sum('precio_total'))['total'] or 0
+        self.precio_total = total
+        self.save()
 
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, related_name='detalles', on_delete=models.CASCADE)
@@ -32,3 +37,5 @@ class DetallePedido(models.Model):
 
     def __str__(self):
         return f"{self.cantidad}x {self.producto.nombre} (Pedido {self.pedido.id})"
+    
+
