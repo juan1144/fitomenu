@@ -10,7 +10,7 @@ from .forms import ProductoForm, CategoriaProductoForm
 
 def lista_productos(request):
     productos_list = Producto.objects.filter(disponible=True)
-    categorias = CategoriaProducto.objects.all()  # 🔹 Asegurar que enviamos las categorías al template
+    categorias = CategoriaProducto.objects.all()
     paginator = Paginator(productos_list, 5)
 
     page_number = request.GET.get("page")
@@ -20,8 +20,9 @@ def lista_productos(request):
         request,
         "admin_panel/lista.html",
         {
+            "page_title": "Administración de Productos",
             "productos": productos,
-            "categorias": categorias,  # 🔹 Enviar las categorías
+            "categorias": categorias,
             "show_sidebar": False,
         },
     )
@@ -75,7 +76,7 @@ def cambiar_estado_categoria(request, categoria_id):
             return JsonResponse({"success": False, "error": "Estado inválido"})
 
         categoria = get_object_or_404(CategoriaProducto, id=categoria_id)
-        categoria.disponible = nuevo_estado  # 🔹 Cambiar estado en la base de datos
+        categoria.disponible = nuevo_estado
         categoria.save()
 
         return JsonResponse({"success": True, "nuevo_estado": categoria.disponible})
@@ -95,7 +96,7 @@ def agregar_categoria(request):
 def eliminar_categoria(request, categoria_id):
     categoria = get_object_or_404(CategoriaProducto, id=categoria_id)
 
-    if categoria.productos.exists():  # 🔹 Si tiene productos, no permitir eliminarla
+    if categoria.productos.exists():
         return JsonResponse({"success": False, "error": "No puedes eliminar esta categoría porque tiene productos asociados."})
 
     categoria.delete()
