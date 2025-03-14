@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Carrito de Compras - Mesa {{ pedido.numero_mesa }}</h2>
+
+{% if detalles %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detalle in detalles %}
+        <tr>
+            <td>
+                {% if detalle.producto.imagen %}
+                    <img src="{{ detalle.producto.imagen.url }}" alt="{{ detalle.producto.nombre }}" width="50">
+                {% else %}
+                    <img src="/static/img/default.png" alt="Sin imagen" width="50">
+                {% endif %}
+            </td>
+            <td>{{ detalle.producto.nombre }}</td>
+            <td>${{ detalle.producto.precio }}</td>
+            <td>{{ detalle.cantidad }}</td>
+            <td>${{ detalle.precio_total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4>Total: ${{ pedido.precio_total }}</h4>
+
+<a href="{% url 'menu:Menu_Productos' %}" class="btn btn-primary">Seguir comprando</a>
+
+{% else %}
+<p>Tu carrito está vacío.</p>
+{% endif %}
+
+{% endblock %}

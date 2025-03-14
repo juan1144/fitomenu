@@ -35,7 +35,14 @@
                 <button class="dropdown-item">Panel de cocina</button>
               </li>
               <li>{% csrf_token %}
-                <button class="dropdown-item">Menú</button>
+                <button class="dropdown-item" href="{% url 'menu:Menu_Productos' %}">Menú</button>
+              </li>
+              <li>
+                {% if numero_mesa %}
+                  <a class="dropdown-item" href="{% url 'menu:ver_carrito' numero_mesa=numero_mesa %}">Ver Carrito</a>
+                {% else %}
+                  <span class="dropdown-item text-muted">Selecciona una mesa</span>
+                {% endif %}
               </li>
           {% endif %}
       </ul>
