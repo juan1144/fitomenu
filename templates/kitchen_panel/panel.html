@@ -36,8 +36,8 @@
                                 <ul class="list-unstyled">${detallesHtml}</ul>
                                 <p><strong>Total:</strong> $${pedido.precio_total}</p>
                                 <p><strong>Notas:</strong> ${pedido.notas || "Sin notas"}</p>
-                                <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${pedido.id}, 'entregado')">✅ Entregado</button>
-                                <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${pedido.id}, 'cancelado')">❌ Cancelar</button>
+                                <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${pedido.id}, 'entregado')"><i class="bi bi-check"></i> Listo</button>
+                                <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${pedido.id}, 'cancelado')"><i class="bi bi-x"></i> Cancelar</button>
                             </div>
                         </div>
                     </div>
