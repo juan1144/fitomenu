@@ -2,12 +2,30 @@
 {% block title %}Menú de Productos - FitoMenu{% endblock %}
 
 {% block content %}
+
+<style>
+  .product-card {
+    width: 250px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+</style>
+
 <div class="container">
   <div class="row justify-content-center">
     {% for producto in producto %}
     <div class="col-md-4 mb-4">
-      <div class="card mx-auto" style="width: 18rem">
-        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" />
+      <div class="card mx-auto product-card" style="width: 18rem">
+        <img class"product-card img" src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" />
         <div class="card-body">
           <h5 class="card-title">{{ producto.nombre }}</h5>
           <p class="card-text"><b>${{ producto.precio }}</b></p>
@@ -44,13 +62,14 @@
   </div>
 </div>
 
-<!-- Contador del carrito (opcional) -->
-<div id="carrito-contador" style="position: fixed; top: 10px; right: 10px; background: red; color: white; padding: 5px 10px; border-radius: 50%;">
+<!-- Contador del carrito -->
+{% comment %} <div id="carrito-contador" style="position: fixed; bottom: 20px; right: 20px; background: red; color: white; padding: 10px 15px; border-radius: 50%; font-size: 1.2rem;">
   0
 </div>
 
 <script>
   let productoId = null;
+  let carrito = new Set(JSON.parse(localStorage.getItem("carrito")) || []); // Cargar carrito desde localStorage
 
   function setProductoId(id) {
       productoId = id;
@@ -77,8 +96,11 @@
       .then(data => {
           if (data.success) {
               alert("Producto agregado al carrito.");
-              actualizarContadorCarrito(data.total_items);
               
+              carrito.add(productoId); // Agregar solo IDs únicos
+              localStorage.setItem("carrito", JSON.stringify([...carrito])); // Guardar en localStorage
+              actualizarContadorCarrito(carrito.size);
+
               // Ocultar el modal después de agregar el producto
               let modal = bootstrap.Modal.getInstance(document.getElementById("numeroMesaModal"));
               modal.hide();
@@ -89,9 +111,47 @@
       .catch(error => console.error("Error:", error));
   }
 
-  function actualizarContadorCarrito(total) {
-      document.getElementById("carrito-contador").innerText = total;
+  function actualizarContadorCarrito(totalProductos) {
+      document.getElementById("carrito-contador").innerText = totalProductos;
   }
-</script>
+
+  // Al cargar la página, obtener el estado actual del carrito desde el servidor
+  window.onload = function() {
+      fetch("/menu/carrito_actual/") // Nueva vista en Django para obtener el carrito actual
+      .then(response => response.json())
+      .then(data => {
+          if (data.productos) {
+              // Fusionar productos del servidor con localStorage
+              data.productos.forEach(id => carrito.add(id));
+              localStorage.setItem("carrito", JSON.stringify([...carrito]));
+              actualizarContadorCarrito(carrito.size);
+          }
+      })
+      .catch(error => console.error("Error al obtener carrito:", error));
+  };
+
+  function marcarPedidoEntregado(pedidoId) {
+    fetch(`/menu/pedido/entregado/${pedidoId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.mensaje) {
+            // Al recibir respuesta positiva, reiniciar el carrito
+            carrito.clear();  // Limpiar el carrito
+            localStorage.removeItem('carrito');  // Limpiar localStorage
+            sessionStorage.removeItem('numero_mesa');  // Limpiar sessionStorage
+
+            actualizarContadorCarrito(0);  // Reiniciar el contador
+
+            alert("Pedido entregado y carrito reiniciado.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}  
+</script> {% endcomment %}
 
 {% endblock %}

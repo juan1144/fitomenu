@@ -30,5 +30,24 @@
         </div>
       </div>
     {% endfor %}
+
+    <!-- Nueva opción para Ver Carrito -->
+    <div class="mt-3">
+      <hr>
+      <ul class="list-group list-group-flush">
+        {% if numero_mesa %}
+          <li class="list-group-item border-0">
+            <a href="{% url 'menu:ver_carrito' numero_mesa=numero_mesa %}"
+               class="fw-bold text-primary text-decoration-none">
+              🛒 Ver Carrito 🛒 (Mesa {{ numero_mesa }})
+            </a>
+          </li>
+        {% else %}
+          <li class="list-group-item border-0 text-secondary">
+            ⚠️ Selecciona una mesa para ver el carrito ⚠️
+          </li>
+        {% endif %}
+      </ul>
+    </div>
   </div>
 </div>

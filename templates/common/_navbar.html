@@ -28,14 +28,11 @@
       <ul class="dropdown-menu dropdown-menu-end">
           {% if show_sidebar %}
               <li>{% csrf_token %}
-                  <button class="dropdown-item">Cerrar sesión</button>
-                </li>
+                <button class="dropdown-item">Cerrar sesión</button>
+              </li>
           {% else %}
               <li>{% csrf_token %}
                 <button class="dropdown-item">Panel de cocina</button>
-              </li>
-              <li>{% csrf_token %}
-                <button class="dropdown-item" href="{% url 'menu:Menu_Productos' %}">Menú</button>
               </li>
               <li>
                 {% if numero_mesa %}

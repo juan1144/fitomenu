@@ -12,6 +12,7 @@
             <th>Precio</th>
             <th>Cantidad</th>
             <th>Subtotal</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -26,8 +27,16 @@
             </td>
             <td>{{ detalle.producto.nombre }}</td>
             <td>${{ detalle.producto.precio }}</td>
-            <td>{{ detalle.cantidad }}</td>
+            <td>
+                <button class="btn btn-sm btn-danger" onclick="modificarCantidad('{{ detalle.producto.id }}', 'restar')">-</button>
+                <span id="cantidad-{{ detalle.producto.id }}">{{ detalle.cantidad }}</span>
+                <button class="btn btn-sm btn-success" onclick="modificarCantidad('{{ detalle.producto.id }}', 'sumar')">+</button>
+            </td>
             <td>${{ detalle.precio_total }}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="eliminarProducto('{{ detalle.producto.id }}')">Eliminar</button>
+            </td>
+            
         </tr>
         {% endfor %}
     </tbody>
@@ -40,5 +49,56 @@
 {% else %}
 <p>Tu carrito está vacío.</p>
 {% endif %}
+
+<script>
+    function modificarCantidad(productoId, accion) {
+        let numeroMesa = "{{ pedido.numero_mesa }}";
+        let cantidadActual = parseInt(document.getElementById(`cantidad-${productoId}`).textContent);
+    
+        let nuevaCantidad = accion === 'sumar' ? cantidadActual + 1 : cantidadActual - 1;
+        if (nuevaCantidad < 0) return; // Evitar valores negativos
+    
+        let url = `/menu/carrito/modificar/${productoId}/${numeroMesa}/${nuevaCantidad}/`;
+    
+        fetch(url, {
+            method: 'POST',
+            headers: { 
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.mensaje) {
+                location.reload();
+            } else {
+                alert("Error al modificar el carrito.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    
+
+    function eliminarProducto(productoId) {
+        fetch(`/menu/carrito/eliminar/${productoId}/`, {  // URL corregida
+            method: 'POST',
+            headers: { 
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.mensaje) {
+                location.reload();  // Recargar página si la eliminación fue exitosa
+            } else {
+                alert("Error al eliminar el producto.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    function getCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]').content;
+    }
+</script>
 
 {% endblock %}
