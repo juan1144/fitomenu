@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+
 <h2>Carrito de Compras - Mesa {{ pedido.numero_mesa }}</h2>
 
 {% if detalles %}
@@ -54,13 +58,11 @@
     function modificarCantidad(productoId, accion) {
         let numeroMesa = "{{ pedido.numero_mesa }}";
         let cantidadActual = parseInt(document.getElementById(`cantidad-${productoId}`).textContent);
-    
         let nuevaCantidad = accion === 'sumar' ? cantidadActual + 1 : cantidadActual - 1;
-        if (nuevaCantidad < 0) return; // Evitar valores negativos
     
-        let url = `/menu/carrito/modificar/${productoId}/${numeroMesa}/${nuevaCantidad}/`;
+        if (nuevaCantidad < 1) return; // Evitar valores negativos o cero
     
-        fetch(url, {
+        fetch(`/menu/carrito/modificar/${productoId}/${numeroMesa}/${nuevaCantidad}/`, {
             method: 'POST',
             headers: { 
                 'X-CSRFToken': getCSRFToken(),
@@ -76,10 +78,10 @@
             }
         })
         .catch(error => console.error('Error:', error));
+    }
     
-
     function eliminarProducto(productoId) {
-        fetch(`/menu/carrito/eliminar/${productoId}/`, {  // URL corregida
+        fetch(`/menu/carrito/eliminar/${productoId}/`, {
             method: 'POST',
             headers: { 
                 'X-CSRFToken': getCSRFToken(),
@@ -89,13 +91,14 @@
         .then(response => response.json())
         .then(data => {
             if (data.mensaje) {
-                location.reload();  // Recargar página si la eliminación fue exitosa
+                location.reload();
             } else {
                 alert("Error al eliminar el producto.");
             }
         })
         .catch(error => console.error('Error:', error));
     }
+    
     function getCSRFToken() {
         return document.querySelector('meta[name="csrf-token"]').content;
     }

@@ -12,4 +12,5 @@ urlpatterns = [
     path('carrito/quitar/<int:producto_id>/', quitar_del_carrito, name='quitar_del_carrito'),
     path('carrito/eliminar/<int:producto_id>/', eliminar_del_carrito, name='eliminar_del_carrito'),
     path('pedido/entregado/<int:pedido_id>/', marcar_pedido_entregado, name='marcar_pedido_entregado'),
+    path('categoria/<str:categoria>/', Menu_Productos, name='menu_por_categoria'),
 ]
