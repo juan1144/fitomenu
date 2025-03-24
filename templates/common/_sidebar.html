@@ -42,6 +42,24 @@
               🛒 Ver Carrito 🛒 (Mesa {{ numero_mesa }})
             </a>
           </li>
+          <li class="list-group-item border-0">
+            <a href="{% url 'menu:Menu_Productos' %}"
+               class="fw-bold text-primary text-decoration-none">
+              Todos los productos
+            </a>
+          </li>
+          <li class="list-group-item border-0">
+            <a href="{% url 'menu:menu_por_categoria' 'Pollo Fito' %}"
+               class="fw-bold text-primary text-decoration-none">
+               🍗 Pollo Fito 🍗
+            </a>
+          </li>
+          <li class="list-group-item border-0">
+            <a href="{% url 'menu:menu_por_categoria' 'Papataratas' %}"
+               class="fw-bold text-primary text-decoration-none">
+               🍟 Papataratas 🍟
+            </a>
+          </li>
         {% else %}
           <li class="list-group-item border-0 text-secondary">
             ⚠️ Selecciona una mesa para ver el carrito ⚠️

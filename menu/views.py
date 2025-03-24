@@ -6,22 +6,28 @@ from django.http import JsonResponse
 
 
 # Create your views here.
-def Menu_Productos(request):
+def Menu_Productos(request, categoria=None):
     numero_mesa = request.session.get('numero_mesa', None)
 
     # Si se cambia de mesa, limpiar el carrito si no hay pedido activo
     if numero_mesa:
         pedido = Pedido.objects.filter(numero_mesa=numero_mesa, estado='preparacion').first()
-        if not pedido:  # Si no hay pedido, se reinicia el carrito
+        if not pedido:
             request.session['carrito'] = {}
-            request.session['carrito_total'] = 0
 
-    producto = Producto.objects.all()
-    return render(
-        request, 'menu/menu_lista.html',
-          {"show_sidebar": True,
-           "producto": producto,
-           "numero_mesa": numero_mesa})
+    if categoria == "Pollo Fito":
+        productos = Producto.objects.filter(categoria__nombre__in=["Pollo Fito", "Bebida"])
+    elif categoria == "Papataratas":
+        productos = Producto.objects.filter(categoria__nombre="Papataratas")
+    else:
+        productos = Producto.objects.all()
+
+    return render(request, 'menu/menu_lista.html', {
+        "show_sidebar": True,
+        "producto": productos,
+        "numero_mesa": numero_mesa,
+        "categoria_actual": categoria
+    })
 
 # Vista para agregar productos al carrito
 def agregar_al_carrito(request, producto_id, numero_mesa, cantidad):
@@ -87,7 +93,7 @@ def modificar_carrito(request, producto_id, numero_mesa, cantidad):
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 def ver_carrito(request, numero_mesa):
-    pedido = Pedido.objects.filter(numero_mesa=numero_mesa, estado='preparacion').first()
+    pedido = Pedido.objects.filter(numero_mesa=numero_mesa, estado='preparacion').prefetch_related('detalles__producto').first()
     detalles = pedido.detalles.all() if pedido else []
     return render(request, 'menu/carrito.html', {
         "show_sidebar": True,
