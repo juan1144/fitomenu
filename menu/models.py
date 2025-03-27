@@ -1,5 +1,6 @@
 from django.db import models
-from admin_panel.models import Producto
+from admin_panel.models import Producto, Orden
+
 
 class Pedido(models.Model):
     ESTADO_CHOICES = [
@@ -8,6 +9,7 @@ class Pedido(models.Model):
         ('cancelado', 'Cancelado')
     ]
 
+    orden = models.ForeignKey(Orden, related_name='pedidos', on_delete=models.CASCADE)
     numero_mesa = models.IntegerField()
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='preparacion')
     precio_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -37,5 +39,5 @@ class DetallePedido(models.Model):
 
     def __str__(self):
         return f"{self.cantidad}x {self.producto.nombre} (Pedido {self.pedido.id})"
-    
+
 
