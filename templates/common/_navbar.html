@@ -38,9 +38,8 @@
                 {% if numero_mesa %}
                   <a class="dropdown-item" href="{% url 'menu:ver_carrito' numero_mesa=numero_mesa %}">Ver Carrito</a>
                 {% else %}
-                  <span class="dropdown-item text-muted">Selecciona una mesa</span>
+                  <li><a class="dropdown-item" href="{% url 'menu:menu_lista' %}">Menú</a></li>
                 {% endif %}
-              </li>
           {% endif %}
       </ul>
     </div>
