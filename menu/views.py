@@ -181,10 +181,11 @@ from django.views.decorators.http import require_POST
 from admin_panel.models import Orden, Producto, CategoriaProducto
 
 
+from django.urls import reverse
+
 def menu_lista(request):
     orden_obj = None
     orden_valida = False
-
     orden_pk = request.session.get('orden_pk')
 
     if orden_pk:
@@ -192,8 +193,32 @@ def menu_lista(request):
         if orden_obj:
             orden_valida = True
 
+    categoria_nombre = request.GET.get('categoria')
     productos = Producto.objects.filter(disponible=True).select_related("categoria")
+    if categoria_nombre:
+        productos = productos.filter(categoria__nombre=categoria_nombre)
+
     categorias = CategoriaProducto.objects.filter(disponible=True)
+
+    menus = [{
+        "title": "Categorías",
+        "is_active": True,
+        "submenus": []
+    }]
+
+    menus[0]["submenus"].append({
+        "title": "Todos",
+        "url": reverse("menu:menu_lista"),
+        "is_active": not categoria_nombre
+    })
+
+    for categoria in categorias:
+        menus[0]["submenus"].append({
+            "title": categoria.nombre,
+            "url": f"{reverse('menu:menu_lista')}?categoria={categoria.nombre}",
+            "is_active": categoria_nombre == categoria.nombre
+        })
+
     return render(
         request,
         'menu/menu_lista.html',
@@ -201,10 +226,14 @@ def menu_lista(request):
             "productos": productos,
             "categorias": categorias,
             "orden_valida": orden_valida,
-            "orden_obj": orden_obj,  # Pasamos el objeto completo
+            "orden_obj": orden_obj,
+            "categoria_actual": categoria_nombre,
             "show_sidebar": True,
+            "menus": menus,
+            "page_title": "Menú",
         }
     )
+
 
 
 @require_POST
