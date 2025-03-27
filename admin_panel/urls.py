@@ -1,7 +1,17 @@
 from django.urls import path
-from .views import lista_productos, producto_eliminar, producto_editar, producto_crear, producto_form, lista_ordenes, \
-    crear_orden, cambiar_estado_orden, orden_form_modal
+from .views import (
+    lista_productos,
+    producto_eliminar,
+    producto_editar,
+    producto_crear,
+    producto_form,
+    lista_ordenes,
+    crear_orden,
+    cambiar_estado_orden,
+    orden_form_modal
+)
 from .views import administrar_categorias, cambiar_estado_categoria, agregar_categoria, eliminar_categoria
+
 app_name = "admin_panel"
 
 urlpatterns = [

@@ -31,9 +31,9 @@
                 <button class="dropdown-item">Cerrar sesión</button>
               </li>
           {% else %}
-              <li>{% csrf_token %}
-                <button class="dropdown-item">Panel de cocina</button>
-              </li>
+            <li><a class="dropdown-item" href="{% url 'admin_panel:lista_ordenes' %}">Órdenes</a></li>
+            <li><a class="dropdown-item" href="{% url 'admin_panel:lista_productos' %}">Administración</a></li>
+            <li><a class="dropdown-item" href="{% url 'kitchen:kitchen_panel' %}">Cocina</a></li>
               <li>
                 {% if numero_mesa %}
                   <a class="dropdown-item" href="{% url 'menu:ver_carrito' numero_mesa=numero_mesa %}">Ver Carrito</a>
