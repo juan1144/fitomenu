@@ -173,7 +173,7 @@
       {% else %}
 {#        <span class="badge bg-success">Orden activa</span>#}
         {% if orden_valida and orden_obj %}
-          <span class="badge bg-success">Orden activa #{{ orden_obj.orden }}</span>
+          <span class="badge bg-success">Orden activa: <strong>#{{ orden_obj.orden }}</strong></span>
         {% endif %}
       {% endif %}
     </div>
@@ -193,7 +193,9 @@
             <p class="card-text">${{ producto.precio }}</p>
             <div class="mt-auto">
               {% if orden_valida %}
-                <button class="btn btn-sm btn-primary w-100">Agregar</button>
+                <button class="btn btn-sm btn-primary w-100" onclick="abrirModalAgregar({{ producto.id }}, '{{ producto.nombre }}')">
+                    Agregar
+                </button>
               {% else %}
                 <button class="btn btn-sm btn-secondary w-100" disabled>Debes ingresar tu orden</button>
               {% endif %}
@@ -204,6 +206,37 @@
     {% endfor %}
   </div>
 </div>
+<div class="modal fade" id="agregarModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="agregarForm" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar <span id="modal-producto-nombre"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="producto_id" id="modal-producto-id">
+        <label for="cantidad" class="form-label">Cantidad</label>
+        <input type="number" name="cantidad" id="modal-cantidad" class="form-control" min="1" value="1" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+  <div id="toast-success" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        Producto agregado correctamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="ordenModal" tabindex="-1" aria-labelledby="ordenModalLabel" aria-hidden="true">
@@ -228,4 +261,72 @@
     </form>
   </div>
 </div>
+<script>
+  const agregarForm = document.getElementById("agregarForm");
+  const agregarModal = document.getElementById("agregarModal");
+  const toastSuccess = document.getElementById("toast-success");
+  const productoIdInput = document.getElementById("modal-producto-id");
+  const productoNombreSpan = document.getElementById("modal-producto-nombre");
+  const cantidadInput = document.getElementById("modal-cantidad");
+
+  function abrirModalAgregar(id, nombre) {
+    productoIdInput.value = id;
+    productoNombreSpan.textContent = nombre;
+    cantidadInput.value = 1;
+    new bootstrap.Modal(agregarModal).show();
+  }
+
+  agregarForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(agregarForm);
+    try {
+      const response = await fetch("{% url 'menu:agregar_al_pedido' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: formData
+      });
+
+      const text = await response.text();
+      const data = JSON.parse(text);
+
+      if (data.success) {
+        bootstrap.Modal.getInstance(agregarModal).hide();
+        new bootstrap.Toast(toastSuccess).show();
+      } else {
+        showToastError(data.message || "Error al agregar.");
+      }
+    } catch (err) {
+      console.error("Error procesando la respuesta:", err);
+      showToastError("Error inesperado en el servidor.");
+    }
+  });
+
+  function showToastError(message) {
+    const errorToast = document.createElement("div");
+    errorToast.className = "toast align-items-center text-bg-danger border-0";
+    errorToast.role = "alert";
+    errorToast.ariaLive = "assertive";
+    errorToast.ariaAtomic = "true";
+    errorToast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    `;
+
+    const container = document.createElement("div");
+    container.className = "position-fixed bottom-0 end-0 p-3";
+    container.style.zIndex = 9999;
+    container.appendChild(errorToast);
+    document.body.appendChild(container);
+
+    new bootstrap.Toast(errorToast).show();
+
+    // Eliminar automáticamente después de desaparecer
+    errorToast.addEventListener("hidden.bs.toast", () => container.remove());
+  }
+</script>
 {% endblock %}

@@ -174,7 +174,7 @@
 #     request.session['numero_mesa'] = None  # Quitar la mesa de la sesión
 #
 #     return JsonResponse({'mensaje': 'Pedido entregado y carrito reiniciado', 'carrito_total': 0})
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
@@ -248,3 +248,41 @@ def validar_orden(request):
         html = "<div class='text-danger'>Orden no encontrada o inactiva.</div>"
 
     return HttpResponse(html)
+
+@require_POST
+def agregar_al_pedido(request):
+    from .models import Pedido, DetallePedido
+    from admin_panel.models import Producto
+
+    orden_pk = request.session.get("orden_pk")
+    producto_id = request.POST.get("producto_id")
+    cantidad = int(request.POST.get("cantidad", 1))
+
+    orden = Orden.objects.filter(id=orden_pk, estado=True).first()
+    producto = Producto.objects.filter(id=producto_id, disponible=True).first()
+
+    if not orden or not producto:
+        return JsonResponse({"success": False, "message": "Orden o producto inválido."})
+
+    pedido, _ = Pedido.objects.get_or_create(
+        orden=orden,
+        estado="preparacion",
+        defaults={
+            "precio_total": 0,
+            "numero_mesa": orden.numero_mesa
+        }
+    )
+
+    detalle, created = DetallePedido.objects.get_or_create(
+        pedido=pedido,
+        producto=producto,
+        defaults={"cantidad": cantidad}
+    )
+
+    if not created:
+        detalle.cantidad += cantidad
+
+    detalle.save()
+    pedido.actualizar_precio_total()
+
+    return JsonResponse({"success": True, "message": "Producto agregado correctamente."})

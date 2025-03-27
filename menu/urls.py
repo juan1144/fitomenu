@@ -16,11 +16,12 @@
 # ]
 
 from django.urls import path
-from .views import menu_lista, validar_orden
+from .views import menu_lista, validar_orden, agregar_al_pedido
 
 app_name = "menu"
 
 urlpatterns = [
     path('', menu_lista, name='menu_lista'),
     path("validar-orden/", validar_orden, name='validar_orden'),
+    path("agregar/", agregar_al_pedido, name='agregar_al_pedido'),
 ]
