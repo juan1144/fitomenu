@@ -182,14 +182,17 @@ from admin_panel.models import Orden, Producto, CategoriaProducto
 
 
 def menu_lista(request):
-    orden_id = request.session.get('orden_id')
+    orden_obj = None
     orden_valida = False
 
-    if orden_id:
-        orden_valida = Orden.objects.filter(id=orden_id, estado=True).exists()
+    orden_pk = request.session.get('orden_pk')
+
+    if orden_pk:
+        orden_obj = Orden.objects.filter(id=orden_pk, estado=True).first()
+        if orden_obj:
+            orden_valida = True
 
     productos = Producto.objects.filter(disponible=True).select_related("categoria")
-
     categorias = CategoriaProducto.objects.filter(disponible=True)
     return render(
         request,
@@ -198,17 +201,20 @@ def menu_lista(request):
             "productos": productos,
             "categorias": categorias,
             "orden_valida": orden_valida,
+            "orden_obj": orden_obj,  # Pasamos el objeto completo
             "show_sidebar": True,
         }
     )
+
 
 @require_POST
 def validar_orden(request):
     orden_id = request.POST.get('orden_id')
 
-    if orden_id and Orden.objects.filter(id=orden_id, estado=True).exists():
-        request.session['orden_id'] = orden_id
-        html = "<div class='text-success'>Orden válida. Puedes cerrar este mensaje.</div><script>setTimeout(() => location.reload(), 1000);</script>"
+    orden = Orden.objects.filter(orden=orden_id, estado=True).first()
+    if orden:
+        request.session['orden_pk'] = orden.id
+        html = f"<div class='text-success'>Orden válida. Puedes cerrar este mensaje.</div><script>setTimeout(() => location.reload(), 1000);</script>"
     else:
         html = "<div class='text-danger'>Orden no encontrada o inactiva.</div>"
 

@@ -171,7 +171,10 @@
           Ingresar número de orden
         </button>
       {% else %}
-        <span class="badge bg-success">Orden activa</span>
+{#        <span class="badge bg-success">Orden activa</span>#}
+        {% if orden_valida and orden_obj %}
+          <span class="badge bg-success">Orden activa #{{ orden_obj.orden }}</span>
+        {% endif %}
       {% endif %}
     </div>
   </div>
@@ -205,14 +208,18 @@
 <!-- Modal -->
 <div class="modal fade" id="ordenModal" tabindex="-1" aria-labelledby="ordenModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form method="post" class="modal-content" hx-post="{% url 'menu:validar_orden' %}" hx-target="#ordenModal .modal-body" hx-swap="innerHTML">
+    <form method="post" class="modal-content"
+      hx-post="{% url 'menu:validar_orden' %}"
+      hx-target="#orden-validation-result"
+      hx-swap="innerHTML">
       {% csrf_token %}
       <div class="modal-header">
         <h5 class="modal-title" id="ordenModalLabel">Ingresar número de orden</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <label for="ordenInput" class="form-label">Número de orden</label>
+        <div id="orden-validation-result"></div>
+        <label for="ordenInput" class="form-label mt-2">Número de orden</label>
         <input type="number" name="orden_id" class="form-control" id="ordenInput" required>
       </div>
       <div class="modal-footer">
