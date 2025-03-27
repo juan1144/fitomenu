@@ -32,8 +32,10 @@
                     <div class="col-md-4">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title">Mesa ${pedido.numero_mesa}</h5>
+                                <h5 class="card-title">Orden #${pedido.orden}</h5>
+                                {#<h5 class="card-title">Mesa ${pedido.numero_mesa}</h5>#}
                                 <ul class="list-unstyled">${detallesHtml}</ul>
+                                <p><strong>Mesa:</strong> ${pedido.numero_mesa}</p>
                                 <p><strong>Total:</strong> $${pedido.precio_total}</p>
                                 <p><strong>Notas:</strong> ${pedido.notas || "Sin notas"}</p>
                                 <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${pedido.id}, 'entregado')"><i class="bi bi-check"></i> Listo</button>

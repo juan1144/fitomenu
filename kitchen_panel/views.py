@@ -14,6 +14,7 @@ def kitchen_orders(request):
     data = [
         {
             "id": pedido.id,
+            "orden": pedido.orden.orden,
             "numero_mesa": pedido.numero_mesa,
             "estado": pedido.estado,
             "precio_total": pedido.precio_total,
