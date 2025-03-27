@@ -1,0 +1,21 @@
+<tr id="orden-row-{{ orden.id }}">
+    <td>{{ orden.orden }}</td>
+    <td>{{ orden.numero_mesa }}</td>
+    <td>
+        {% if orden.estado %}
+            <span class="badge bg-success">Activa</span>
+        {% else %}
+            <span class="badge bg-secondary">Inactiva</span>
+        {% endif %}
+    </td>
+    <td>
+        <form method="post"
+              hx-post="{% url 'admin_panel:cambiar_estado_orden' orden.id %}"
+              hx-target="#orden-row-{{ orden.id }}"
+              hx-swap="outerHTML"
+              class="d-inline-block">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary btn-sm">Cambiar</button>
+        </form>
+    </td>
+</tr>

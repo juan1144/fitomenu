@@ -1,12 +1,14 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
 import json
 
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from .models import Producto, CategoriaProducto
-from .forms import ProductoForm, CategoriaProductoForm
+from .models import Producto, CategoriaProducto, Orden
+from .forms import ProductoForm, CategoriaProductoForm, OrdenForm
+
 
 def lista_productos(request):
     productos_list = Producto.objects.filter(disponible=True)
@@ -101,3 +103,60 @@ def eliminar_categoria(request, categoria_id):
 
     categoria.delete()
     return JsonResponse({"success": True})
+
+def lista_ordenes(request):
+    list = Orden.objects.all().order_by("-created_at")
+    paginator = Paginator(list, 10)
+    page = request.GET.get('page')
+    ordenes = paginator.get_page(page)
+
+    return render(
+        request,
+        "admin_panel/orden_lista.html",
+        {
+            "page_title": "Administración de órdenes",
+            "ordenes": ordenes,
+            "show_sidebar": False,
+        },
+    )
+
+def orden_form_modal(request):
+    form = OrdenForm()
+    html = render_to_string(
+        "admin_panel/partials/_orden_form.html",
+        {"form": form},
+        request=request,
+    )
+    return HttpResponse(html)
+
+def crear_orden(request):
+    if request.method == "POST":
+        form = OrdenForm(request.POST)
+        if form.is_valid():
+            orden = form.save(commit=False)
+            orden.estado = True  # aseguramos que se cree activa
+            orden.save()
+            if request.headers.get("Hx-Request"):
+                response = HttpResponse()
+                response["HX-Trigger"] = "ordenCreada"
+                return response
+            return redirect("admin_panel:lista_ordenes")
+    else:
+        form = OrdenForm()
+
+    html = render_to_string(
+        "admin_panel/partials/_orden_form.html",
+        {"form": form},
+        request=request,
+    )
+    return HttpResponse(html)
+
+def cambiar_estado_orden(request, orden_id):
+    if request.method == "POST":
+        orden = get_object_or_404(Orden, id=orden_id)
+        orden.estado = not orden.estado
+        orden.save()
+
+        html = render_to_string("admin_panel/partials/_orden_row.html", {"orden": orden}, request=request)
+        return HttpResponse(html)
+    return JsonResponse({"success": False, "error": "Método no permitido"})

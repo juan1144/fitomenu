@@ -1,5 +1,7 @@
 from django import forms
-from .models import Producto
+from django.core.management.commands.makemessages import plural_forms_re
+
+from .models import Producto, Orden
 from .models import CategoriaProducto
 
 class ProductoForm(forms.ModelForm):
@@ -14,3 +16,8 @@ class CategoriaProductoForm(forms.ModelForm):
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-control", "placeholder": "Nueva categoría"})
         }
+
+class OrdenForm(forms.ModelForm):
+    class Meta:
+        model = Orden
+        fields = ["numero_mesa"]

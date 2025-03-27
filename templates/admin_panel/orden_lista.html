@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Lista de Órdenes - FitoMenu{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-success btn-sm"
+                hx-get="{% url 'admin_panel:orden_form_modal' %}"
+                hx-target="#genericModalBody"
+                hx-trigger="click"
+                data-bs-toggle="modal"
+                data-bs-target="#genericModal">
+            <i class="bi bi-plus-circle"></i> Nueva Orden
+        </button>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Orden</th>
+                <th>Mesa</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orden in ordenes %}
+            <tr id="orden-row-{{ orden.id }}">
+                <td>{{ orden.orden }}</td>
+                <td>{{ orden.numero_mesa }}</td>
+                <td>
+                    {% if orden.estado %}
+                        <span class="badge bg-success">Activa</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactiva</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="post"
+                          hx-post="{% url 'admin_panel:cambiar_estado_orden' orden.id %}"
+                          hx-target="#orden-row-{{ orden.id }}"
+                          hx-swap="outerHTML"
+                          class="d-inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Cambiar</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No hay órdenes registradas</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if ordenes.has_other_pages %}
+        <nav>
+          <ul class="pagination justify-content-center">
+            {% if ordenes.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; Primera</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ ordenes.previous_page_number }}">Anterior</a>
+              </li>
+            {% endif %}
+        
+            <li class="page-item active">
+              <span class="page-link">
+                Página {{ ordenes.number }} de {{ ordenes.paginator.num_pages }}
+              </span>
+            </li>
+        
+            {% if ordenes.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ ordenes.next_page_number }}">Siguiente</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ ordenes.paginator.num_pages }}">Última &raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+    {% endif %}
+</div>
+    {% include "common/_modal.html" %}
+{% block scripts %}
+<script>
+  document.body.addEventListener('ordenCreada', function () {
+      const modalEl = document.getElementById('genericModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+      setTimeout(() => location.reload(), 300);
+  });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% if data.paginator.num_pages > 1 %}
+  <ul class="pagination pagination-sm mb-0">
+    <li class="page-item{% if not data.has_previous %} disabled{% endif %}">
+      <a href="#"
+         class="page-link"
+         hx-get="{% if data.has_previous %}{{ url }}{% querystring query_dict page=data.previous_page_number %}{% endif %}"
+         hx-target="{{ target }}"
+         data-loading-class="disabled">Previo</a>
+    </li>
+    {% for page_number in page_numbers %}
+      {% if page_number == data.paginator.ELLIPSIS %}
+        <li class="page-link">{{ page_number }}</li>
+      {% else %}
+        <li class="page-item">
+          <a href="#"
+             class="page-link{% if page_number == data.number %} active{% endif %}"
+             hx-get="{{ url }}{% querystring query_dict page=page_number %}"
+             hx-target="{{ target }}"
+             data-loading-class="disabled">{{ page_number }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+    <li class="page-item{% if not data.has_next %} disabled{% endif %}">
+      <a href="#"
+         class="page-link"
+         hx-get="{{ url }}{% if data.has_next %}{% querystring query_dict page=data.next_page_number %}{% endif %}"
+         hx-target="{{ target }}"
+         data-loading-class="disabled">Siguiente</a>
+    </li>
+  </ul>
+{% endif %}

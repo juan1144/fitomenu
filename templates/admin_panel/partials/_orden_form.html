@@ -1,0 +1,19 @@
+<!-- admin_panel/partials/_orden_form.html -->
+<form id="genericModalForm" method="post"
+      hx-post="{% url 'admin_panel:crear_orden' %}"
+      hx-target="#genericModalBody"
+      hx-swap="none">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="{{ form.numero_mesa.id_for_label }}" class="form-label">Número de Mesa</label>
+        {{ form.numero_mesa }}
+    </div>
+</form>
+
+<!-- Modal Footer (OOB) -->
+<div id="genericModalFooter" hx-swap-oob="true">
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" form="genericModalForm">Guardar</button>
+    </div>
+</div>

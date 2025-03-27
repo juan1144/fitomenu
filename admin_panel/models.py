@@ -7,6 +7,7 @@ class CategoriaProducto(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """Function to show category info"""
         return self.nombre
 
 class Producto(models.Model):
@@ -19,8 +20,10 @@ class Producto(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """Function to show product info"""
         return self.nombre
 
+# admin_panel/models.py
 class Orden(models.Model):
     orden = models.IntegerField(unique=True)
     numero_mesa = models.IntegerField()
@@ -28,5 +31,12 @@ class Orden(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.orden:
+            last = Orden.objects.order_by("-orden").first()
+            self.orden = (last.orden + 1) if last else 1
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Orden {self.orden} - Mesa {self.mesa}"
+        return f"Orden {self.orden} - Mesa {self.numero_mesa}"
+
