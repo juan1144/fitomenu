@@ -1,0 +1,33 @@
+<div class="offcanvas-header">
+  <h5 class="offcanvas-title">Tu Pedido</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+</div>
+
+<div class="offcanvas-body d-flex flex-column">
+  {% if pedido and pedido.detalles.exists %}
+    <ul class="list-group mb-3">
+      {% for item in pedido.detalles.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ item.cantidad }}x</strong> {{ item.producto.nombre }}
+          </div>
+          <span>${{ item.precio_total }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-auto">
+      <p class="fw-bold text-end">Total: ${{ pedido.precio_total }}</p>
+      <button class="btn btn-success w-100"
+              hx-post="{% url 'menu:confirmar_pedido' %}"
+              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+              hx-swap="none"
+              hx-trigger="click"
+              onclick="ocultarCarrito()">
+        Confirmar Pedido
+      </button>
+    </div>
+  {% else %}
+    <p class="text-muted">Tu carrito está vacío.</p>
+  {% endif %}
+</div>

@@ -1,0 +1,14 @@
+<div id="carrito-panel" class="position-fixed top-0 end-0 bg-white shadow-lg p-3 border-start h-100" style="width: 350px; z-index: 1055; display: none;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Tu pedido</h5>
+    <button class="btn-close" onclick="toggleCarrito()" aria-label="Cerrar"></button>
+  </div>
+
+  <div id="carrito-contenido" hx-get="{% url 'menu:carrito_contenido' %}" hx-trigger="load" hx-swap="innerHTML">
+    <div class="text-center mt-4 text-muted">Cargando...</div>
+  </div>
+
+  <div class="mt-4">
+    <button class="btn btn-success w-100" onclick="confirmarCarrito()">Confirmar pedido</button>
+  </div>
+</div>

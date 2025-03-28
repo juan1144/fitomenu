@@ -4,6 +4,7 @@ from admin_panel.models import Producto, Orden
 
 class Pedido(models.Model):
     ESTADO_CHOICES = [
+        ('confirmacion', 'En confirmación'),
         ('preparacion', 'En preparación'),
         ('entregado', 'Entregado'),
         ('cancelado', 'Cancelado')
@@ -11,7 +12,7 @@ class Pedido(models.Model):
 
     orden = models.ForeignKey(Orden, related_name='pedidos', on_delete=models.CASCADE)
     numero_mesa = models.IntegerField()
-    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='preparacion')
+    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='confirmacion')
     precio_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notas = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
