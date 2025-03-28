@@ -1,3 +1,4 @@
+from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -121,9 +122,11 @@ def carrito_contenido(request):
         return HttpResponse("")
 
     pedido = Pedido.objects.filter(orden_id=orden_pk, estado="confirmacion").first()
+    total_items = pedido.detalles.count() if pedido else 0
 
     html = render_to_string("menu/partials/_carrito_contenido.html", {
-        "pedido": pedido
+        "pedido": pedido,
+        "total_items": total_items
     }, request=request)
 
     return HttpResponse(html)

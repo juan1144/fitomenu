@@ -140,8 +140,14 @@
 <button class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle shadow"
         style="width: 56px; height: 56px; z-index: 1045;"
         data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas" aria-controls="carritoOffcanvas"
-        title="Ver carrito">
+        title="Ver carrito"
+        id="boton-carrito">
   <i class="bi bi-cart-fill"></i>
+  <span id="carrito-contador"
+        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+        style="font-size: 0.7rem;">
+    0
+  </span>
 </button>
 {% include "menu/partials/_carrito.html" %}
 <script>
@@ -178,6 +184,12 @@
       if (data.success) {
         bootstrap.Modal.getInstance(agregarModal).hide();
         new bootstrap.Toast(toastSuccess).show();
+        
+        // 🔁 Actualiza contenido del carrito
+        htmx.ajax('GET', "{% url 'menu:carrito_contenido' %}", {
+          target: '#carritoOffcanvas .offcanvas-body',
+          swap: 'innerHTML'
+        });
       } else {
         showToastError(data.message || "Error al agregar.");
       }
@@ -248,5 +260,13 @@
       alert("Ocurrió un error inesperado.");
     });
   }
+</script>
+<script>
+  document.addEventListener("carrito:actualizarContador", function(e) {
+      const contador = document.getElementById("carrito-contador");
+      const total = e.detail.total || 0;
+      contador.textContent = total;
+      contador.style.display = total > 0 ? "inline-block" : "none";
+    });
 </script>
 {% endblock %}
