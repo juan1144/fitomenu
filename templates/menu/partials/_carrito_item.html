@@ -1,0 +1,29 @@
+<li class="list-group-item d-flex justify-content-between align-items-center" id="detalle-{{ item.id }}">
+  <div class="d-flex align-items-center">
+    <form
+      hx-post="{% url 'menu:actualizar_detalle_pedido' item.id %}"
+      hx-target="#detalle-{{ item.id }}"
+      hx-swap="outerHTML"
+      hx-trigger="change delay:300ms from:.input-cantidad"
+      oninput="this.dispatchEvent(new Event('change'))"
+    >
+      {% csrf_token %}
+      <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1"
+             class="form-control form-control-sm input-cantidad"
+             style="width: 70px; display: inline-block;" />
+      <span class="ms-2">{{ item.producto.nombre }}</span>
+    </form>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <span>${{ item.precio_total }}</span>
+    <button class="btn btn-sm btn-outline-danger"
+            hx-post="{% url 'menu:eliminar_detalle_pedido' item.id %}"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            hx-swap="delete"
+            hx-trigger="click"
+            hx-confirm="¿Estás seguro de eliminar este producto?"
+            hx-on:afterRequest="document.body.dispatchEvent(new CustomEvent('item-updated'))">
+      <i class="bi bi-trash"></i>
+    </button>
+  </div>
+</li>

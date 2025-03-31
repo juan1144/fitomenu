@@ -1,4 +1,3 @@
-from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -9,6 +8,7 @@ from admin_panel.models import Orden, Producto, CategoriaProducto
 
 from django.urls import reverse
 
+from .models import Pedido, DetallePedido
 from menu.models import Pedido
 
 
@@ -80,9 +80,6 @@ def validar_orden(request):
 
 @require_POST
 def agregar_al_pedido(request):
-    from .models import Pedido, DetallePedido
-    from admin_panel.models import Producto
-
     orden_pk = request.session.get("orden_pk")
     producto_id = request.POST.get("producto_id")
     cantidad = int(request.POST.get("cantidad", 1))
@@ -93,14 +90,17 @@ def agregar_al_pedido(request):
     if not orden or not producto:
         return JsonResponse({"success": False, "message": "Orden o producto inválido."})
 
-    pedido, _ = Pedido.objects.get_or_create(
+    pedido = Pedido.objects.filter(
         orden=orden,
-        estado="confirmacion",
-        defaults={
-            "precio_total": 0,
-            "numero_mesa": orden.numero_mesa
-        }
-    )
+        estado__in=["confirmacion", "preparacion"]
+    ).order_by("-created_at").first()
+
+    if not pedido:
+        pedido = Pedido.objects.create(
+            orden=orden,
+            estado="confirmacion",
+            numero_mesa=orden.numero_mesa
+        )
 
     detalle, created = DetallePedido.objects.get_or_create(
         pedido=pedido,
@@ -121,7 +121,11 @@ def carrito_contenido(request):
     if not orden_pk:
         return HttpResponse("")
 
-    pedido = Pedido.objects.filter(orden_id=orden_pk, estado="confirmacion").first()
+    pedido = Pedido.objects.filter(
+        orden_id=orden_pk,
+        estado__in=["confirmacion", "preparacion"]
+    ).order_by("-created_at").first()
+
     total_items = pedido.detalles.count() if pedido else 0
 
     html = render_to_string("menu/partials/_carrito_contenido.html", {
@@ -131,18 +135,63 @@ def carrito_contenido(request):
 
     return HttpResponse(html)
 
-
 @require_POST
 def confirmar_pedido(request):
     orden_pk = request.session.get("orden_pk")
     if not orden_pk:
         return JsonResponse({"success": False, "message": "Orden no encontrada."})
 
-    pedido = Pedido.objects.filter(orden_id=orden_pk, estado="confirmacion").first()
+    pedido = Pedido.objects.filter(
+        orden_id=orden_pk,
+        estado="confirmacion"
+    ).first()
+
     if not pedido or not pedido.detalles.exists():
         return JsonResponse({"success": False, "message": "El carrito está vacío."})
 
     pedido.estado = "preparacion"
     pedido.save()
 
-    return JsonResponse({"success": True, "message": "Pedido confirmado y enviado a cocina."})
+    return JsonResponse({
+        "success": True,
+        "message": "Pedido confirmado y enviado a cocina.",
+        "reloadCarrito": True  # usado para refrescar desde JS si se quiere
+    })
+
+
+@require_POST
+def actualizar_detalle_pedido(request, detalle_id):
+    from .models import DetallePedido  # si no está ya importado
+    detalle = DetallePedido.objects.select_related("pedido", "producto").filter(id=detalle_id).first()
+
+    cantidad = int(request.POST.get("cantidad", 1))
+    if not detalle or cantidad < 1:
+        return HttpResponse(status=400)
+
+    detalle.cantidad = cantidad
+    detalle.save()
+    detalle.pedido.actualizar_precio_total()
+
+    html = render_to_string("menu/partials/_carrito_item.html", {
+        "item": detalle
+    }, request=request)
+
+    response = HttpResponse(html)
+    response["HX-Trigger"] = "item-updated"
+    return response
+
+
+@require_POST
+def eliminar_detalle_pedido(request, detalle_id):
+    from .models import DetallePedido  # si no está ya importado
+    detalle = DetallePedido.objects.select_related("pedido").filter(id=detalle_id).first()
+    if not detalle:
+        return HttpResponse(status=400)
+
+    pedido = detalle.pedido
+    detalle.delete()
+    pedido.actualizar_precio_total()
+
+    response = HttpResponse()
+    response["HX-Trigger"] = "item-updated"
+    return response

@@ -44,15 +44,11 @@ def update_order_status(request, pedido_id):
         body = json.loads(request.body)
         nuevo_estado = body.get("estado")
 
-        print(f"Recibido estado: {nuevo_estado}")
-
         if nuevo_estado not in ["entregado", "cancelado"]:
             return JsonResponse({"error": "Estado inválido"}, status=400)
 
         pedido.estado = nuevo_estado
         pedido.save()
-
-        print(f"Pedido {pedido_id} actualizado a {nuevo_estado}")
 
         return JsonResponse({"mensaje": f"Pedido {pedido.id} actualizado a {nuevo_estado}"})
 
