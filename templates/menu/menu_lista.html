@@ -89,16 +89,16 @@
 </div>
 
 <!-- Toast de confirmación -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
-  <div id="toast-success" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        Producto agregado correctamente.
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-    </div>
-  </div>
-</div>
+{#<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">#}
+{#  <div id="toast-success" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">#}
+{#    <div class="d-flex">#}
+{#      <div class="toast-body">#}
+{#        Producto agregado correctamente.#}
+{#      </div>#}
+{#      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
 
 
 <!-- Modal -->
@@ -182,8 +182,10 @@
       const data = JSON.parse(text);
 
       if (data.success) {
-        bootstrap.Modal.getInstance(agregarModal).hide();
-        new bootstrap.Toast(toastSuccess).show();
+          bootstrap.Modal.getInstance(agregarModal).hide();
+          mostrarToast(data.message || "Producto agregado correctamente.", "success"); // ✅ esta es la correcta
+
+
         
         // 🔁 Actualiza contenido del carrito
         htmx.ajax('GET', "{% url 'menu:carrito_contenido' %}", {
@@ -223,6 +225,30 @@
     // Eliminar automáticamente después de desaparecer
     errorToast.addEventListener("hidden.bs.toast", () => container.remove());
   }
+  function mostrarToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = `toast align-items-center text-bg-${type} border-0`;
+  toast.role = "alert";
+  toast.ariaLive = "assertive";
+  toast.ariaAtomic = "true";
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  `;
+
+  const container = document.createElement("div");
+  container.className = "position-fixed bottom-0 end-0 p-3";
+  container.style.zIndex = 9999;
+  container.appendChild(toast);
+  document.body.appendChild(container);
+
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
+
+  toast.addEventListener("hidden.bs.toast", () => container.remove());
+}
 </script>
 <script>
   function toggleCarrito() {
