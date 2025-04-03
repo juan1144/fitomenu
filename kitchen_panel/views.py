@@ -36,8 +36,6 @@ def kitchen_orders(request):
 @csrf_exempt
 @require_POST
 def update_order_status(request, pedido_id):
-    print(f"Llamando a update_order_status con pedido_id: {pedido_id}")
-
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
     try:
@@ -49,6 +47,10 @@ def update_order_status(request, pedido_id):
 
         pedido.estado = nuevo_estado
         pedido.save()
+
+        orden = pedido.orden
+        orden.estado = False
+        orden.save()
 
         return JsonResponse({"mensaje": f"Pedido {pedido.id} actualizado a {nuevo_estado}"})
 
