@@ -27,19 +27,18 @@
               aria-expanded="false">opciones</button>
       <ul class="dropdown-menu dropdown-menu-end">
           {% if show_sidebar %}
-              <li>{% csrf_token %}
-                <button class="dropdown-item">Cerrar sesión</button>
+              <li>
+                  <a class="dropdown-item" href="{% url 'menu:ubicacion' %}">Ubicación</a>
               </li>
           {% else %}
-            <li><a class="dropdown-item" href="{% url 'admin_panel:lista_ordenes' %}">Órdenes</a></li>
-            <li><a class="dropdown-item" href="{% url 'admin_panel:lista_productos' %}">Productos</a></li>
-            <li><a class="dropdown-item" href="{% url 'kitchen:kitchen_panel' %}">Cocina</a></li>
-              <li>
-                {% if numero_mesa %}
-                  <a class="dropdown-item" href="{% url 'menu:ver_carrito' numero_mesa=numero_mesa %}">Ver Carrito</a>
-                {% else %}
+            {% if show_other_options %}
                   <li><a class="dropdown-item" href="{% url 'menu:menu_lista' %}">Menú</a></li>
-                {% endif %}
+            {% else %}
+                <li><a class="dropdown-item" href="{% url 'admin_panel:lista_ordenes' %}">Órdenes</a></li>
+                <li><a class="dropdown-item" href="{% url 'admin_panel:lista_productos' %}">Productos</a></li>
+                <li><a class="dropdown-item" href="{% url 'kitchen:kitchen_panel' %}">Cocina</a></li>
+                <li><a class="dropdown-item" href="{% url 'menu:menu_lista' %}">Menú</a></li>
+            {% endif %}
           {% endif %}
       </ul>
     </div>

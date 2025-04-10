@@ -195,3 +195,13 @@ def eliminar_detalle_pedido(request, detalle_id):
     response = HttpResponse()
     response["HX-Trigger"] = "item-updated"
     return response
+
+def ubicacion(request):
+    return render(
+        request,
+        "menu/ubicacion.html",
+        {
+            "page_title": "Ubicación",
+            "show_other_options": True,
+        }
+    )
