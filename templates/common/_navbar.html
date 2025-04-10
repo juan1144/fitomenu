@@ -1,3 +1,4 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg dx-bg-navbar py-1">
   <div class="container-fluid ps-0">
     <!-- Sidebar toggle -->
@@ -15,8 +16,9 @@
         {% endif %}
       <!-- Branding -->
 {#      <a class="navbar-brand ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}" href="{% url 'core:index' %}">#}
-      <a class="navbar-brand ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}">
-        Fito Menú
+      <a class="navbar-brand d-flex align-items-center gap-2 ms-2 {% if DEBUG %}text-danger{% else %}text-white{% endif %}" href="{% url 'menu:menu_lista' %}">
+        <img src="{% static 'logo.jpg' %}" alt="Logo Pollo Fito" height="40" class="rounded shadow-sm">
+        <span>Pollo Fito Menú</span>
       </a>
     </div>
     <!-- User dropdown -->
