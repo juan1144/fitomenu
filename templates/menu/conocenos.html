@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Conócenos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row align-items-center mb-5">
+    <div class="col-md-6">
+      <h2 class="mb-3">Nuestra Historia</h2>
+      <p>Pollo Fito nació como un pequeño emprendimiento familiar en Santa Ana, El Salvador, con el sueño de ofrecer el mejor pollo frito de la ciudad. A lo largo de los años, nos hemos ganado el corazón de nuestros clientes gracias al sabor único de nuestras recetas tradicionales y al trato cálido que brindamos en cada visita.</p>
+    </div>
+    <div class="col-md-6">
+      <img src="{% static 'logo.jpg' %}" class="img-fluid rounded shadow" alt="Nuestra historia">
+    </div>
+  </div>
+
+  <div class="row text-center">
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-emoji-smile" style="font-size: 2rem;"></i>
+      <h5 class="mt-2">Atención amable</h5>
+      <p class="small">Te tratamos como parte de la familia, siempre con una sonrisa.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-star-fill" style="font-size: 2rem;"></i>
+      <h5 class="mt-2">Sabor de calidad</h5>
+      <p class="small">Nuestros productos son frescos y preparados al momento.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-rocket-takeoff" style="font-size: 2rem;"></i>
+      <h5 class="mt-2">En constante evolución</h5>
+      <p class="small">Buscamos innovar sin perder nuestra esencia.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

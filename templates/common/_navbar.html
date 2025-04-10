@@ -27,12 +27,13 @@
               aria-expanded="false">opciones</button>
       <ul class="dropdown-menu dropdown-menu-end">
           {% if show_sidebar %}
-              <li>
-                  <a class="dropdown-item" href="{% url 'menu:ubicacion' %}">Ubicación</a>
-              </li>
+              <li><a class="dropdown-item" href="{% url 'menu:ubicacion' %}">Ubicación</a></li>
+              <li><a class="dropdown-item" href="{% url 'menu:conocenos' %}">Conócenos</a></li>
           {% else %}
             {% if show_other_options %}
                   <li><a class="dropdown-item" href="{% url 'menu:menu_lista' %}">Menú</a></li>
+                  <li><a class="dropdown-item" href="{% url 'menu:ubicacion' %}">Ubicación</a></li>
+                  <li><a class="dropdown-item" href="{% url 'menu:conocenos' %}">Conócenos</a></li>
             {% else %}
                 <li><a class="dropdown-item" href="{% url 'admin_panel:lista_ordenes' %}">Órdenes</a></li>
                 <li><a class="dropdown-item" href="{% url 'admin_panel:lista_productos' %}">Productos</a></li>

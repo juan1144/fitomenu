@@ -12,10 +12,10 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}" defer></script>
     <script src="{% static 'js/htmx/htmx.min.js' %}" defer></script>
   </head>
-  <body>
-{#    {% if user.is_authenticated %}#}
+  <body class="d-flex flex-column min-vh-100">
       {% include 'common/_navbar.html' %}
-      <div class="container-fluid">
+    
+      <div class="container-fluid flex-grow-1">
         <div class="row">
           <div class="col-md-auto px-0 border-end">
             {% if show_sidebar %}
@@ -28,11 +28,40 @@
           </main>
         </div>
       </div>
+    
       {% include 'common/messages/_messages.html' %}
       <script src="{% static 'js/base.min.js' %}" defer></script>
       {% block scripts %}{% endblock %}
-{#    {% else %}#}
-{#      <div class="container">{% block login %}{% endblock %}</div>#}
-{#    {% endif %}#}
-  </body>
+    
+      <!-- Footer sticky al fondo -->
+      {% if show_footer %}
+          <footer class="bg-dark text-white py-4 mt-auto">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <h5 class="text-uppercase">Pollo Fito</h5>
+                  <p class="small">Sabor tradicional, servicio moderno.<br>Santa Ana, El Salvador</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <h6 class="text-uppercase">Enlaces</h6>
+                  <ul class="list-unstyled small">
+                    <li><a href="{% url 'menu:menu_lista' %}" class="text-white text-decoration-none">Menú</a></li>
+                    <li><a href="{% url 'menu:ubicacion' %}" class="text-white text-decoration-none">Ubicación</a></li>
+                    <li><a href="{% url 'menu:conocenos' %}" class="text-white text-decoration-none">Conócenos</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <h6 class="text-uppercase">Síguenos</h6>
+                  <a href="https://www.facebook.com/pollofito.sv/" target="_blank" class="text-white me-2"><i class="bi bi-facebook"></i></a>
+                  <a href="https://www.instagram.com/pollo_fitosv/?hl=es" target="_blank" class="text-white me-2"><i class="bi bi-instagram"></i></a>
+{#                  <a href="#" class="text-white"><i class="bi bi-whatsapp"></i></a>#}
+                </div>
+              </div>
+              <div class="text-center mt-3 small">
+                &copy; {{ now|date:"Y" }} Pollo Fito. Todos los derechos reservados.
+              </div>
+            </div>
+          </footer>
+      {% endif %}
+    </body>
 </html>

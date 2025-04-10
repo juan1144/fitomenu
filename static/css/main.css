@@ -20640,3 +20640,6 @@ button, .btn {
 }
 
 /*# sourceMappingURL=main.css.map */
+.with-floating-button {
+  padding-bottom: 6rem; /* suficiente espacio para el botón flotante */
+}

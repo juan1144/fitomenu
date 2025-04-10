@@ -60,6 +60,7 @@ def menu_lista(request):
             "show_sidebar": True,
             "menus": menus,
             "page_title": "Menú",
+            "show_footer": True,
         }
     )
 
@@ -203,5 +204,18 @@ def ubicacion(request):
         {
             "page_title": "Ubicación",
             "show_other_options": True,
+            "show_footer": True,
         }
     )
+
+def conocenos(request):
+    return render(
+        request,
+        "menu/conocenos.html",
+        {
+            "page_title": "Conócenos",
+            "show_other_options": True,
+            "show_footer": True,
+        }
+    )
+
