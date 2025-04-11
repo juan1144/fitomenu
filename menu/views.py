@@ -3,8 +3,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
-from admin_panel.models import Orden, Producto, CategoriaProducto
-
+from admin_panel.models import Orden, Producto, CategoriaProducto, RestauranteInfo
 
 from django.urls import reverse
 
@@ -214,11 +213,13 @@ def eliminar_detalle_pedido(request, detalle_id):
 
 
 def ubicacion(request):
+    info, _ = RestauranteInfo.objects.get_or_create(id=1)
     return render(
         request,
         "menu/ubicacion.html",
         {
             "page_title": "Ubicación",
+            "info": info,
             "show_other_options": True,
             "show_footer": True,
         },
@@ -226,11 +227,13 @@ def ubicacion(request):
 
 
 def conocenos(request):
+    info, _ = RestauranteInfo.objects.get_or_create(id=1)
     return render(
         request,
         "menu/conocenos.html",
         {
             "page_title": "Conócenos",
+            "info": info,
             "show_other_options": True,
             "show_footer": True,
         },

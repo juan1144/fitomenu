@@ -6,8 +6,8 @@ import json
 
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from .models import Producto, CategoriaProducto, Orden
-from .forms import ProductoForm, CategoriaProductoForm, OrdenForm
+from .models import Producto, CategoriaProducto, Orden, RestauranteInfo
+from .forms import ProductoForm, CategoriaProductoForm, OrdenForm, RestauranteInfoForm
 
 
 def lista_productos(request):
@@ -198,3 +198,25 @@ def cambiar_estado_orden(request, orden_id):
             request, "admin_panel/partials/_orden_toggle_row.html", {"orden": orden}
         )
     return JsonResponse({"success": False, "error": "Método no permitido"})
+
+
+def editar_info_restaurante(request):
+    instance, _ = RestauranteInfo.objects.get_or_create(id=1)
+
+    if request.method == "POST":
+        form = RestauranteInfoForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect("admin_panel:editar_info_restaurante")
+    else:
+        form = RestauranteInfoForm(instance=instance)
+
+    return render(
+        request,
+        "admin_panel/info_restaurante_form.html",
+        {
+            "form": form,
+            "page_title": "Configuración del Restaurante",
+            "show_sidebar": False,
+        },
+    )

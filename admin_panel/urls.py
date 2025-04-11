@@ -9,6 +9,7 @@ from .views import (
     crear_orden,
     cambiar_estado_orden,
     orden_form_modal,
+    editar_info_restaurante,
 )
 from .views import (
     administrar_categorias,
@@ -51,4 +52,5 @@ urlpatterns = [
         name="cambiar_estado_orden",
     ),
     path("ordenes/form/modal/", orden_form_modal, name="orden_form_modal"),
+    path("configuracion/", editar_info_restaurante, name="editar_info_restaurante"),
 ]

@@ -28,7 +28,6 @@ class Producto(models.Model):
         return self.nombre
 
 
-# admin_panel/models.py
 class Orden(models.Model):
     orden = models.IntegerField(unique=True)
     numero_mesa = models.IntegerField()
@@ -44,3 +43,19 @@ class Orden(models.Model):
 
     def __str__(self):
         return f"Orden {self.orden} - Mesa {self.numero_mesa}"
+
+
+class RestauranteInfo(models.Model):
+    nombre = models.CharField(max_length=255)
+    eslogan = models.CharField(max_length=255, blank=True)
+    historia = models.TextField(blank=True)
+    iframe_ubicacion = models.TextField(blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "Configuración del Restaurante"
+
+    class Meta:
+        verbose_name = "Información del Restaurante"
+        verbose_name_plural = "Información del Restaurante"
