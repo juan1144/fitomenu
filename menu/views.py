@@ -155,13 +155,16 @@ def confirmar_pedido(request):
     pedido.estado = "preparacion"
     pedido.save()
 
-    return JsonResponse(
-        {
-            "success": True,
-            "message": "Pedido confirmado y enviado a cocina.",
-            "reloadCarrito": True,  # usado para refrescar desde JS si se quiere
-        }
+    # ✅ Recargar el HTML actualizado del carrito
+    total_items = pedido.detalles.count()
+
+    html = render_to_string(
+        "menu/partials/_carrito_contenido.html",
+        {"pedido": pedido, "total_items": total_items},
+        request=request,
     )
+
+    return HttpResponse(html)
 
 
 @require_POST
