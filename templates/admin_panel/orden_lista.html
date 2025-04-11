@@ -28,20 +28,21 @@
                 <td>{{ orden.orden }}</td>
                 <td>{{ orden.numero_mesa }}</td>
                 <td>
-                    {% if orden.estado %}
-                        <span class="badge bg-success">Activa</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Inactiva</span>
-                    {% endif %}
-                </td>
-                <td>
                     <form method="post"
                           hx-post="{% url 'admin_panel:cambiar_estado_orden' orden.id %}"
                           hx-target="#orden-row-{{ orden.id }}"
                           hx-swap="outerHTML"
                           class="d-inline-block">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-primary btn-sm">Cambiar</button>
+                        <button type="submit"
+                                class="border-0 text-white px-3 py-2 badge d-flex align-items-center gap-1 {% if orden.estado %}bg-success{% else %}bg-secondary{% endif %}"
+                                style="cursor: pointer;">
+                            {% if orden.estado %}
+                                <i class="bi bi-toggle-on"></i> Activa
+                            {% else %}
+                                <i class="bi bi-toggle-off"></i> Inactiva
+                            {% endif %}
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -63,13 +64,13 @@
                 <a class="page-link" href="?page={{ ordenes.previous_page_number }}">Anterior</a>
               </li>
             {% endif %}
-        
+
             <li class="page-item active">
               <span class="page-link">
                 Página {{ ordenes.number }} de {{ ordenes.paginator.num_pages }}
               </span>
             </li>
-        
+
             {% if ordenes.has_next %}
               <li class="page-item">
                 <a class="page-link" href="?page={{ ordenes.next_page_number }}">Siguiente</a>

@@ -194,8 +194,7 @@ def cambiar_estado_orden(request, orden_id):
         orden.estado = not orden.estado
         orden.save()
 
-        html = render_to_string(
-            "admin_panel/partials/_orden_row.html", {"orden": orden}, request=request
+        return render(
+            request, "admin_panel/partials/_orden_toggle_row.html", {"orden": orden}
         )
-        return HttpResponse(html)
     return JsonResponse({"success": False, "error": "Método no permitido"})
