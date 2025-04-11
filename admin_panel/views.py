@@ -1,4 +1,9 @@
-from django.http import HttpResponseRedirect, HttpResponse
+import datetime
+import io
+
+import pandas as pd
+from django.db.models import Count, Sum
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest, FileResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -6,6 +11,9 @@ import json
 
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.utils.timezone import now, timedelta
+
+from menu.models import Pedido, DetallePedido
 from .models import Producto, CategoriaProducto, Orden, RestauranteInfo
 from .forms import ProductoForm, CategoriaProductoForm, OrdenForm, RestauranteInfoForm
 
@@ -217,6 +225,122 @@ def editar_info_restaurante(request):
         {
             "form": form,
             "page_title": "Configuración del Restaurante",
+            "show_sidebar": False,
+        },
+    )
+
+
+def dashboard(request: HttpRequest):
+    hoy = now().date()
+    rangos = [
+        (hoy - timedelta(days=7 * i), hoy - timedelta(days=7 * (i + 1)))
+        for i in range(5)
+    ]
+
+    siete_dias_atras = hoy - timedelta(days=7)
+    top_productos = (
+        DetallePedido.objects.filter(
+            pedido__created_at__date__gte=siete_dias_atras, pedido__estado="entregado"
+        )
+        .values("producto__nombre")
+        .annotate(total_cantidad=Sum("cantidad"))
+        .order_by("-total_cantidad")[:5]
+    )
+    top_nombres = [p["producto__nombre"] for p in top_productos]
+
+    producto_semana_data = {nombre: [] for nombre in top_nombres}
+    for inicio, fin in rangos:
+        semana_detalles = (
+            DetallePedido.objects.filter(
+                pedido__created_at__date__gte=fin,
+                pedido__created_at__date__lt=inicio,
+                pedido__estado="entregado",
+                producto__nombre__in=top_nombres,
+            )
+            .values("producto__nombre")
+            .annotate(cantidad=Sum("cantidad"))
+        )
+        cantidades = {d["producto__nombre"]: d["cantidad"] for d in semana_detalles}
+        for nombre in top_nombres:
+            producto_semana_data[nombre].append(cantidades.get(nombre, 0))
+
+    ganancias = []
+    etiquetas = []
+    for inicio, fin in rangos:
+        semana_total = (
+            Pedido.objects.filter(
+                created_at__date__gte=fin,
+                created_at__date__lt=inicio,
+                estado="entregado",
+            ).aggregate(total=Sum("precio_total"))["total"]
+            or 0
+        )
+        ganancias.append(float(semana_total))
+        etiquetas.append(f"{(hoy - inicio).days}-{(hoy - fin).days}")
+
+    # ========== REPORTE ==========
+    desde_str = request.GET.get("desde")
+    hasta_str = request.GET.get("hasta")
+    try:
+        desde = (
+            datetime.datetime.strptime(desde_str, "%Y-%m-%d").date()
+            if desde_str
+            else hoy - timedelta(days=7)
+        )
+        hasta = (
+            datetime.datetime.strptime(hasta_str, "%Y-%m-%d").date()
+            if hasta_str
+            else hoy
+        )
+    except ValueError:
+        desde = hoy - timedelta(days=7)
+        hasta = hoy
+
+    pedidos = (
+        Pedido.objects.filter(created_at__date__range=[desde, hasta])
+        .select_related("orden")
+        .annotate(
+            total_items=Sum("detalles__cantidad"),
+            productos_unicos=Count("detalles__producto", distinct=True),
+        )
+        .order_by("-created_at")
+    )
+
+    # ========== EXPORTACIÓN ==========
+    if request.GET.get("exportar") == "1":
+        data = []
+        for i, p in enumerate(pedidos, start=1):
+            data.append(
+                {
+                    "#": i,
+                    "Fecha": p.created_at.strftime("%d/%m/%Y"),
+                    "Productos únicos": p.productos_unicos,
+                    "Total ítems": p.total_items,
+                    "Total cancelado": float(p.precio_total),
+                }
+            )
+
+        df = pd.DataFrame(data)
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+            df.to_excel(writer, index=False, sheet_name="Órdenes")
+        output.seek(0)
+        filename = f"reporte_ordenes_{desde}_{hasta}.xlsx"
+        return FileResponse(output, as_attachment=True, filename=filename)
+
+    # ========== RENDER NORMAL ==========
+    return render(
+        request,
+        "admin_panel/dashboard.html",
+        {
+            "page_title": "Dashboard",
+            "productos_top": top_nombres,
+            "producto_semana_data": producto_semana_data,
+            "ganancias": ganancias,
+            "labels_ganancia": etiquetas,
+            "pedidos": pedidos,
+            "desde": desde,
+            "hasta": hasta,
             "show_sidebar": False,
         },
     )

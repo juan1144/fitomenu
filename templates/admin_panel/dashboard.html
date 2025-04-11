@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - FitoMenu{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Tarjeta de Productos -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header fw-bold">Productos más vendidos (últimos 7 días)</div>
+        <div class="card-body">
+          <table class="table table-sm table-bordered mb-0">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>0–7 días</th>
+                <th>7–14 días</th>
+                <th>14–21 días</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for nombre in productos_top %}
+                {% with cantidades=producto_semana_data|dictsort:0 %}
+                <tr>
+                  <td>{{ nombre }}</td>
+                  {% for cantidad in producto_semana_data.nombre %}
+                    <td>{{ cantidad }}</td>
+                  {% endfor %}
+                </tr>
+                {% endwith %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de ganancias -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header fw-bold">Ganancias semanales</div>
+        <div class="card-body" style="height: 320px;">
+          <canvas id="graficoGanancias" style="width: 100%; height: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte de órdenes -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-bold">Reporte de órdenes</span>
+          <form method="get" class="d-flex align-items-center gap-2">
+            <input type="date" name="desde" class="form-control form-control-sm" value="{{ desde }}">
+            <input type="date" name="hasta" class="form-control form-control-sm" value="{{ hasta }}">
+            <button class="btn btn-primary btn-sm">Buscar</button>
+            <a href="?desde={{ desde }}&hasta={{ hasta }}&exportar=1" class="btn btn-success btn-sm">Descargar Excel</a>
+          </form>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped table-sm mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Productos únicos</th>
+                <th>Total ítems</th>
+                <th>Total cancelado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pedido in pedidos %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ pedido.created_at|date:"d/m/Y" }}</td>
+                <td>{{ pedido.productos_unicos }}</td>
+                <td>{{ pedido.total_items }}</td>
+                <td>${{ pedido.precio_total }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="text-center">No hay órdenes en este período</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('graficoGanancias');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ labels_ganancia|safe }},
+      datasets: [{
+        label: 'Ganancia ($)',
+        data: {{ ganancias|safe }},
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '$' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}
