@@ -29,9 +29,11 @@ def lista_productos(request):
         },
     )
 
+
 def producto_form(request):
     form = ProductoForm()
     return render(request, "admin_panel/producto_form.html", {"form": form})
+
 
 def producto_crear(request):
     if request.method == "POST":
@@ -42,7 +44,16 @@ def producto_crear(request):
     else:
         form = ProductoForm()
 
-    return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Agregar Producto", "show_sidebar": False,})
+    return render(
+        request,
+        "admin_panel/producto_form.html",
+        {
+            "form": form,
+            "titulo": "Agregar Producto",
+            "show_sidebar": False,
+        },
+    )
+
 
 def producto_editar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
@@ -55,19 +66,34 @@ def producto_editar(request, producto_id):
     else:
         form = ProductoForm(instance=producto)
 
-    return render(request, "admin_panel/producto_form.html", {"form": form, "titulo": "Editar Producto", "show_sidebar": False,})
+    return render(
+        request,
+        "admin_panel/producto_form.html",
+        {
+            "form": form,
+            "titulo": "Editar Producto",
+            "show_sidebar": False,
+        },
+    )
+
 
 def producto_eliminar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
     if request.method == "POST":
         producto.delete()
-        return HttpResponseRedirect(reverse('admin_panel:lista_productos'))
+        return HttpResponseRedirect(reverse("admin_panel:lista_productos"))
+
 
 def administrar_categorias(request):
     categorias = CategoriaProducto.objects.all()
     form = CategoriaProductoForm()
-    return render(request, "admin_panel/categorias_modal.html", {"categorias": categorias, "form": form})
+    return render(
+        request,
+        "admin_panel/categorias_modal.html",
+        {"categorias": categorias, "form": form},
+    )
+
 
 def cambiar_estado_categoria(request, categoria_id):
     if request.method == "POST":
@@ -85,6 +111,7 @@ def cambiar_estado_categoria(request, categoria_id):
 
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
+
 def agregar_categoria(request):
     if request.method == "POST":
         form = CategoriaProductoForm(request.POST)
@@ -95,19 +122,26 @@ def agregar_categoria(request):
             return JsonResponse({"success": False, "error": form.errors})
     return JsonResponse({"success": False, "error": "Solicitud inválida"})
 
+
 def eliminar_categoria(request, categoria_id):
     categoria = get_object_or_404(CategoriaProducto, id=categoria_id)
 
     if categoria.productos.exists():
-        return JsonResponse({"success": False, "error": "No puedes eliminar esta categoría porque tiene productos asociados."})
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "No puedes eliminar esta categoría porque tiene productos asociados.",
+            }
+        )
 
     categoria.delete()
     return JsonResponse({"success": True})
 
+
 def lista_ordenes(request):
     list = Orden.objects.all().order_by("-created_at")
     paginator = Paginator(list, 10)
-    page = request.GET.get('page')
+    page = request.GET.get("page")
     ordenes = paginator.get_page(page)
 
     return render(
@@ -120,6 +154,7 @@ def lista_ordenes(request):
         },
     )
 
+
 def orden_form_modal(request):
     form = OrdenForm()
     html = render_to_string(
@@ -128,6 +163,7 @@ def orden_form_modal(request):
         request=request,
     )
     return HttpResponse(html)
+
 
 def crear_orden(request):
     if request.method == "POST":
@@ -151,12 +187,15 @@ def crear_orden(request):
     )
     return HttpResponse(html)
 
+
 def cambiar_estado_orden(request, orden_id):
     if request.method == "POST":
         orden = get_object_or_404(Orden, id=orden_id)
         orden.estado = not orden.estado
         orden.save()
 
-        html = render_to_string("admin_panel/partials/_orden_row.html", {"orden": orden}, request=request)
+        html = render_to_string(
+            "admin_panel/partials/_orden_row.html", {"orden": orden}, request=request
+        )
         return HttpResponse(html)
     return JsonResponse({"success": False, "error": "Método no permitido"})

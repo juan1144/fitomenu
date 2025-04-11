@@ -8,49 +8,49 @@ from admin_panel.models import Orden, Producto, CategoriaProducto
 
 from django.urls import reverse
 
-from .models import Pedido, DetallePedido
+from .models import DetallePedido
 from menu.models import Pedido
 
 
 def menu_lista(request):
     orden_obj = None
     orden_valida = False
-    orden_pk = request.session.get('orden_pk')
+    orden_pk = request.session.get("orden_pk")
 
     if orden_pk:
         orden_obj = Orden.objects.filter(id=orden_pk, estado=True).first()
         if orden_obj:
             orden_valida = True
 
-    categoria_nombre = request.GET.get('categoria')
+    categoria_nombre = request.GET.get("categoria")
     productos = Producto.objects.filter(disponible=True).select_related("categoria")
     if categoria_nombre:
         productos = productos.filter(categoria__nombre=categoria_nombre)
 
     categorias = CategoriaProducto.objects.filter(disponible=True)
 
-    menus = [{
-        "title": "Categorías",
-        "is_active": True,
-        "submenus": []
-    }]
+    menus = [{"title": "Categorías", "is_active": True, "submenus": []}]
 
-    menus[0]["submenus"].append({
-        "title": "Todos",
-        "url": reverse("menu:menu_lista"),
-        "is_active": not categoria_nombre
-    })
+    menus[0]["submenus"].append(
+        {
+            "title": "Todos",
+            "url": reverse("menu:menu_lista"),
+            "is_active": not categoria_nombre,
+        }
+    )
 
     for categoria in categorias:
-        menus[0]["submenus"].append({
-            "title": categoria.nombre,
-            "url": f"{reverse('menu:menu_lista')}?categoria={categoria.nombre}",
-            "is_active": categoria_nombre == categoria.nombre
-        })
+        menus[0]["submenus"].append(
+            {
+                "title": categoria.nombre,
+                "url": f"{reverse('menu:menu_lista')}?categoria={categoria.nombre}",
+                "is_active": categoria_nombre == categoria.nombre,
+            }
+        )
 
     return render(
         request,
-        'menu/menu_lista.html',
+        "menu/menu_lista.html",
         {
             "productos": productos,
             "categorias": categorias,
@@ -61,23 +61,23 @@ def menu_lista(request):
             "menus": menus,
             "page_title": "Menú",
             "show_footer": True,
-        }
+        },
     )
-
 
 
 @require_POST
 def validar_orden(request):
-    orden_id = request.POST.get('orden_id')
+    orden_id = request.POST.get("orden_id")
 
     orden = Orden.objects.filter(orden=orden_id, estado=True).first()
     if orden:
-        request.session['orden_pk'] = orden.id
-        html = f"<div class='text-success'>Orden válida. Puedes cerrar este mensaje.</div><script>setTimeout(() => location.reload(), 1000);</script>"
+        request.session["orden_pk"] = orden.id
+        html = "<div class='text-success'>Orden válida. Puedes cerrar este mensaje.</div><script>setTimeout(() => location.reload(), 1000);</script>"
     else:
         html = "<div class='text-danger'>Orden no encontrada o inactiva.</div>"
 
     return HttpResponse(html)
+
 
 @require_POST
 def agregar_al_pedido(request):
@@ -91,22 +91,19 @@ def agregar_al_pedido(request):
     if not orden or not producto:
         return JsonResponse({"success": False, "message": "Orden o producto inválido."})
 
-    pedido = Pedido.objects.filter(
-        orden=orden,
-        estado__in=["confirmacion", "preparacion"]
-    ).order_by("-created_at").first()
+    pedido = (
+        Pedido.objects.filter(orden=orden, estado__in=["confirmacion", "preparacion"])
+        .order_by("-created_at")
+        .first()
+    )
 
     if not pedido:
         pedido = Pedido.objects.create(
-            orden=orden,
-            estado="confirmacion",
-            numero_mesa=orden.numero_mesa
+            orden=orden, estado="confirmacion", numero_mesa=orden.numero_mesa
         )
 
     detalle, created = DetallePedido.objects.get_or_create(
-        pedido=pedido,
-        producto=producto,
-        defaults={"cantidad": cantidad}
+        pedido=pedido, producto=producto, defaults={"cantidad": cantidad}
     )
 
     if not created:
@@ -115,26 +112,34 @@ def agregar_al_pedido(request):
     detalle.save()
     pedido.actualizar_precio_total()
 
-    return JsonResponse({"success": True, "message": "Producto agregado correctamente."})
+    return JsonResponse(
+        {"success": True, "message": "Producto agregado correctamente."}
+    )
+
 
 def carrito_contenido(request):
     orden_pk = request.session.get("orden_pk")
     if not orden_pk:
         return HttpResponse("")
 
-    pedido = Pedido.objects.filter(
-        orden_id=orden_pk,
-        estado__in=["confirmacion", "preparacion"]
-    ).order_by("-created_at").first()
+    pedido = (
+        Pedido.objects.filter(
+            orden_id=orden_pk, estado__in=["confirmacion", "preparacion"]
+        )
+        .order_by("-created_at")
+        .first()
+    )
 
     total_items = pedido.detalles.count() if pedido else 0
 
-    html = render_to_string("menu/partials/_carrito_contenido.html", {
-        "pedido": pedido,
-        "total_items": total_items
-    }, request=request)
+    html = render_to_string(
+        "menu/partials/_carrito_contenido.html",
+        {"pedido": pedido, "total_items": total_items},
+        request=request,
+    )
 
     return HttpResponse(html)
+
 
 @require_POST
 def confirmar_pedido(request):
@@ -142,10 +147,7 @@ def confirmar_pedido(request):
     if not orden_pk:
         return JsonResponse({"success": False, "message": "Orden no encontrada."})
 
-    pedido = Pedido.objects.filter(
-        orden_id=orden_pk,
-        estado="confirmacion"
-    ).first()
+    pedido = Pedido.objects.filter(orden_id=orden_pk, estado="confirmacion").first()
 
     if not pedido or not pedido.detalles.exists():
         return JsonResponse({"success": False, "message": "El carrito está vacío."})
@@ -153,17 +155,24 @@ def confirmar_pedido(request):
     pedido.estado = "preparacion"
     pedido.save()
 
-    return JsonResponse({
-        "success": True,
-        "message": "Pedido confirmado y enviado a cocina.",
-        "reloadCarrito": True  # usado para refrescar desde JS si se quiere
-    })
+    return JsonResponse(
+        {
+            "success": True,
+            "message": "Pedido confirmado y enviado a cocina.",
+            "reloadCarrito": True,  # usado para refrescar desde JS si se quiere
+        }
+    )
 
 
 @require_POST
 def actualizar_detalle_pedido(request, detalle_id):
     from .models import DetallePedido  # si no está ya importado
-    detalle = DetallePedido.objects.select_related("pedido", "producto").filter(id=detalle_id).first()
+
+    detalle = (
+        DetallePedido.objects.select_related("pedido", "producto")
+        .filter(id=detalle_id)
+        .first()
+    )
 
     cantidad = int(request.POST.get("cantidad", 1))
     if not detalle or cantidad < 1:
@@ -173,9 +182,9 @@ def actualizar_detalle_pedido(request, detalle_id):
     detalle.save()
     detalle.pedido.actualizar_precio_total()
 
-    html = render_to_string("menu/partials/_carrito_item.html", {
-        "item": detalle
-    }, request=request)
+    html = render_to_string(
+        "menu/partials/_carrito_item.html", {"item": detalle}, request=request
+    )
 
     response = HttpResponse(html)
     response["HX-Trigger"] = "item-updated"
@@ -185,7 +194,10 @@ def actualizar_detalle_pedido(request, detalle_id):
 @require_POST
 def eliminar_detalle_pedido(request, detalle_id):
     from .models import DetallePedido  # si no está ya importado
-    detalle = DetallePedido.objects.select_related("pedido").filter(id=detalle_id).first()
+
+    detalle = (
+        DetallePedido.objects.select_related("pedido").filter(id=detalle_id).first()
+    )
     if not detalle:
         return HttpResponse(status=400)
 
@@ -197,6 +209,7 @@ def eliminar_detalle_pedido(request, detalle_id):
     response["HX-Trigger"] = "item-updated"
     return response
 
+
 def ubicacion(request):
     return render(
         request,
@@ -205,8 +218,9 @@ def ubicacion(request):
             "page_title": "Ubicación",
             "show_other_options": True,
             "show_footer": True,
-        }
+        },
     )
+
 
 def conocenos(request):
     return render(
@@ -216,6 +230,5 @@ def conocenos(request):
             "page_title": "Conócenos",
             "show_other_options": True,
             "show_footer": True,
-        }
+        },
     )
-
