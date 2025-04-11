@@ -9,13 +9,13 @@
         display: flex;
         flex-direction: column;
       }
-    
+
       .product-image {
         height: 180px;
         object-fit: cover;
         border-bottom: 1px solid #ddd;
       }
-    
+
       .product-body {
         flex-grow: 1;
         display: flex;
@@ -186,7 +186,7 @@
           mostrarToast(data.message || "Producto agregado correctamente.", "success"); // ✅ esta es la correcta
 
 
-        
+
         // 🔁 Actualiza contenido del carrito
         htmx.ajax('GET', "{% url 'menu:carrito_contenido' %}", {
           target: '#carritoOffcanvas .offcanvas-body',
@@ -294,5 +294,19 @@
       contador.textContent = total;
       contador.style.display = total > 0 ? "inline-block" : "none";
     });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const botonCarrito = document.getElementById("boton-carrito");
+    const carritoOffcanvas = document.getElementById("carritoOffcanvas");
+
+    carritoOffcanvas.addEventListener("show.bs.offcanvas", function () {
+      botonCarrito.classList.add("d-none");
+    });
+
+    carritoOffcanvas.addEventListener("hidden.bs.offcanvas", function () {
+      botonCarrito.classList.remove("d-none");
+    });
+  });
 </script>
 {% endblock %}
