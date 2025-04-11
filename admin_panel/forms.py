@@ -30,7 +30,15 @@ class OrdenForm(forms.ModelForm):
 class RestauranteInfoForm(forms.ModelForm):
     class Meta:
         model = RestauranteInfo
-        fields = ["nombre", "eslogan", "historia", "iframe_ubicacion"]
+        fields = [
+            "nombre",
+            "eslogan",
+            "historia",
+            "iframe_ubicacion",
+            "ubicacion",
+            "facebook_url",
+            "instagram_url",
+        ]
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
             "eslogan": forms.TextInput(attrs={"class": "form-control"}),
@@ -38,4 +46,7 @@ class RestauranteInfoForm(forms.ModelForm):
             "iframe_ubicacion": forms.Textarea(
                 attrs={"rows": 3, "class": "form-control"}
             ),
+            "ubicacion": forms.TextInput(attrs={"class": "form-control"}),
+            "facebook_url": forms.URLInput(attrs={"class": "form-control"}),
+            "instagram_url": forms.URLInput(attrs={"class": "form-control"}),
         }

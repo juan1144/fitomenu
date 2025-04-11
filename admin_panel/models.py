@@ -49,7 +49,10 @@ class RestauranteInfo(models.Model):
     nombre = models.CharField(max_length=255)
     eslogan = models.CharField(max_length=255, blank=True)
     historia = models.TextField(blank=True)
+    ubicacion = models.CharField(max_length=255, blank=True)
     iframe_ubicacion = models.TextField(blank=True)
+    facebook_url = models.URLField(blank=True)
+    instagram_url = models.URLField(blank=True)
 
     updated_at = models.DateTimeField(auto_now=True)
 

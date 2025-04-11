@@ -41,7 +41,9 @@
               <div class="col-md-4 mb-3">
                 <h5 class="text-uppercase">{{ info_restaurante.nombre|default:"Pollo Fito" }}</h5>
                 <p class="small">{{ info_restaurante.eslogan|default:"Sabor tradicional, servicio moderno." }}</p>
-                <p class="small">Santa Ana, El Salvador</p>
+                <p class="small">
+                  {{ info_restaurante.ubicacion|default:"Santa Ana, El Salvador" }}
+                </p>
               </div>
               <div class="col-md-4 mb-3">
                 <h6 class="text-uppercase">Enlaces</h6>
@@ -53,8 +55,16 @@
               </div>
               <div class="col-md-4 mb-3">
                 <h6 class="text-uppercase">Síguenos</h6>
-                <a href="https://www.facebook.com/pollofito.sv/" target="_blank" class="text-white me-2"><i class="bi bi-facebook"></i></a>
-                <a href="https://www.instagram.com/pollo_fitosv/?hl=es" target="_blank" class="text-white me-2"><i class="bi bi-instagram"></i></a>
+                {% if info_restaurante.facebook_url %}
+                  <a href="{{ info_restaurante.facebook_url }}" target="_blank" class="text-white me-2">
+                    <i class="bi bi-facebook"></i>
+                  </a>
+                {% endif %}
+                {% if info_restaurante.instagram_url %}
+                  <a href="{{ info_restaurante.instagram_url }}" target="_blank" class="text-white me-2">
+                    <i class="bi bi-instagram"></i>
+                  </a>
+                {% endif %}
               </div>
             </div>
             <div class="text-center mt-3 small">
