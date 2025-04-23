@@ -3,10 +3,10 @@
 {% block content %}
 <div class="container-fluid">
   <div class="row">
-    <!-- Tarjeta de Productos -->
+    <!-- Tarjeta -->
     <div class="col-md-6 mb-4">
       <div class="card shadow-sm h-100">
-        <div class="card-header fw-bold">Productos más vendidos (últimos 7 días)</div>
+        <div class="card-header fw-bold">Productos más vendidos</div>
         <div class="card-body">
           <table class="table table-sm table-bordered mb-0">
             <thead>
@@ -15,18 +15,18 @@
                 <th>0–7 días</th>
                 <th>7–14 días</th>
                 <th>14–21 días</th>
+                <th>21–28 días</th>
+                <th>28–35 días</th>
               </tr>
             </thead>
             <tbody>
-              {% for nombre in productos_top %}
-                {% with cantidades=producto_semana_data|dictsort:0 %}
-                <tr>
-                  <td>{{ nombre }}</td>
-                  {% for cantidad in producto_semana_data.nombre %}
-                    <td>{{ cantidad }}</td>
-                  {% endfor %}
+              {% for nombre, cantidades in productos_con_cantidades %}
+                  <tr>
+                      <td>{{ nombre }}</td>
+                      {% for cantidad in cantidades %}
+                        <td>{{ cantidad }}</td>
+                      {% endfor %}
                 </tr>
-                {% endwith %}
               {% endfor %}
             </tbody>
           </table>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <!-- Gráfico de ganancias -->
+    <!-- Gráfico -->
     <div class="col-md-6 mb-4">
       <div class="card shadow-sm h-100">
         <div class="card-header fw-bold">Ganancias semanales</div>
@@ -45,7 +45,7 @@
     </div>
   </div>
 
-  <!-- Reporte de órdenes -->
+  <!-- Reporte -->
   <div class="row">
     <div class="col-12">
       <div class="card shadow-sm">

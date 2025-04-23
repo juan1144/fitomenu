@@ -328,13 +328,17 @@ def dashboard(request: HttpRequest):
         filename = f"reporte_ordenes_{desde}_{hasta}.xlsx"
         return FileResponse(output, as_attachment=True, filename=filename)
 
-    # ========== RENDER NORMAL ==========
+    productos_con_cantidades = [
+        (nombre, producto_semana_data[nombre]) for nombre in top_nombres
+    ]
+    for nombre, cantidad in productos_con_cantidades:
+        print(nombre, cantidad)
     return render(
         request,
         "admin_panel/dashboard.html",
         {
             "page_title": "Dashboard",
-            "productos_top": top_nombres,
+            "productos_con_cantidades": productos_con_cantidades,
             "producto_semana_data": producto_semana_data,
             "ganancias": ganancias,
             "labels_ganancia": etiquetas,
