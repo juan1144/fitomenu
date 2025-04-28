@@ -25,17 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-tdu_o9__b+)diulbrh#)im5fp6wli8*e^6ahk=jngnk5dyf_c-"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 # Directory for multimedia files
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Application definition
 
@@ -54,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -134,11 +126,28 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# CONFIGURATION
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+
+STATIC_URL = os.getenv("STATIC_URL", "/static/")
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = os.getenv("STATIC_ROOT", BASE_DIR / "staticfiles")
+
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / "mediafiles")
+
+# IMPLEMENT AFTER ACTIVATING HTTPS ON SERVER
+# if not DEBUG:
+#     SECURE_SSL_REDIRECT = True
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SECURE_HSTS_SECONDS = 31536000
