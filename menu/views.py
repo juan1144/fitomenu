@@ -118,8 +118,6 @@ def agregar_al_pedido(request):
 
 def carrito_contenido(request):
     orden_pk = request.session.get("orden_pk")
-    if not orden_pk:
-        return HttpResponse("")
 
     pedido = (
         Pedido.objects.filter(
