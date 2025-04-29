@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +9,7 @@ from django.views.decorators.http import require_GET, require_POST
 from menu.models import Pedido
 
 
+@login_required
 @require_GET
 def kitchen_orders(request):
     pedidos = Pedido.objects.filter(estado="preparacion").order_by("created_at")
@@ -35,6 +37,7 @@ def kitchen_orders(request):
     return JsonResponse({"pedidos": data})
 
 
+@login_required
 @csrf_exempt
 @require_POST
 def update_order_status(request, pedido_id):
@@ -62,6 +65,7 @@ def update_order_status(request, pedido_id):
         return JsonResponse({"error": "Formato JSON inválido"}, status=400)
 
 
+@login_required
 def kitchen_panel(request):
     return render(
         request,

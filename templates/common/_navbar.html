@@ -37,12 +37,22 @@
                   <li><a class="dropdown-item" href="{% url 'menu:ubicacion' %}">Ubicación</a></li>
                   <li><a class="dropdown-item" href="{% url 'menu:conocenos' %}">Conócenos</a></li>
             {% else %}
-                <li><a class="dropdown-item" href="{% url 'admin_panel:lista_ordenes' %}">Órdenes</a></li>
-                <li><a class="dropdown-item" href="{% url 'kitchen:kitchen_panel' %}">Cocina</a></li>
-                <li><a class="dropdown-item" href="{% url 'admin_panel:lista_productos' %}">Productos</a></li>
-                <li><a class="dropdown-item" href="{% url 'menu:menu_lista' %}">Menú</a></li>
-                <li><a class="dropdown-item" href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li>
-                <li><a class="dropdown-item" href="{% url 'admin_panel:editar_info_restaurante' %}">Configuración</a></li>
+                {% if user.is_authenticated %}
+                    <li><a class="dropdown-item" href="{% url 'admin_panel:lista_ordenes' %}">Órdenes</a></li>
+                    <li><a class="dropdown-item" href="{% url 'kitchen:kitchen_panel' %}">Cocina</a></li>
+                    <li><a class="dropdown-item" href="{% url 'admin_panel:lista_productos' %}">Productos</a></li>
+                {% else %}
+                    <li><a class="dropdown-item" href="{% url 'menu:menu_lista' %}">Menú</a></li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li><a class="dropdown-item" href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li>
+                    <li><a class="dropdown-item" href="{% url 'admin_panel:editar_info_restaurante' %}">Configuración</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                    </form>
+                {% endif %}
             {% endif %}
           {% endif %}
       </ul>

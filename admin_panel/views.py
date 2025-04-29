@@ -3,6 +3,7 @@ import io
 
 import pandas as pd
 from django.db.models import Count, Sum
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest, FileResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -18,6 +19,7 @@ from .models import Producto, CategoriaProducto, Orden, RestauranteInfo
 from .forms import ProductoForm, CategoriaProductoForm, OrdenForm, RestauranteInfoForm
 
 
+@login_required
 def lista_productos(request):
     productos_list = Producto.objects.filter(disponible=True)
     categorias = CategoriaProducto.objects.all()
@@ -38,11 +40,13 @@ def lista_productos(request):
     )
 
 
+@login_required
 def producto_form(request):
     form = ProductoForm()
     return render(request, "admin_panel/producto_form.html", {"form": form})
 
 
+@login_required
 def producto_crear(request):
     if request.method == "POST":
         form = ProductoForm(request.POST, request.FILES)
@@ -63,6 +67,7 @@ def producto_crear(request):
     )
 
 
+@login_required
 def producto_editar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
@@ -85,6 +90,7 @@ def producto_editar(request, producto_id):
     )
 
 
+@login_required
 def producto_eliminar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
@@ -103,6 +109,7 @@ def administrar_categorias(request):
     )
 
 
+@login_required
 def cambiar_estado_categoria(request, categoria_id):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -120,6 +127,7 @@ def cambiar_estado_categoria(request, categoria_id):
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
+@login_required
 def agregar_categoria(request):
     if request.method == "POST":
         form = CategoriaProductoForm(request.POST)
@@ -131,6 +139,7 @@ def agregar_categoria(request):
     return JsonResponse({"success": False, "error": "Solicitud inválida"})
 
 
+@login_required
 def eliminar_categoria(request, categoria_id):
     categoria = get_object_or_404(CategoriaProducto, id=categoria_id)
 
@@ -146,6 +155,7 @@ def eliminar_categoria(request, categoria_id):
     return JsonResponse({"success": True})
 
 
+@login_required
 def lista_ordenes(request):
     list = Orden.objects.all().order_by("-created_at")
     paginator = Paginator(list, 10)
@@ -163,6 +173,7 @@ def lista_ordenes(request):
     )
 
 
+@login_required
 def orden_form_modal(request):
     form = OrdenForm()
     html = render_to_string(
@@ -173,6 +184,7 @@ def orden_form_modal(request):
     return HttpResponse(html)
 
 
+@login_required
 def crear_orden(request):
     if request.method == "POST":
         form = OrdenForm(request.POST)
@@ -196,6 +208,7 @@ def crear_orden(request):
     return HttpResponse(html)
 
 
+@login_required
 def cambiar_estado_orden(request, orden_id):
     if request.method == "POST":
         orden = get_object_or_404(Orden, id=orden_id)
@@ -208,6 +221,7 @@ def cambiar_estado_orden(request, orden_id):
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
+@login_required
 def editar_info_restaurante(request):
     instance, _ = RestauranteInfo.objects.get_or_create(id=1)
 
@@ -230,6 +244,7 @@ def editar_info_restaurante(request):
     )
 
 
+@login_required
 def dashboard(request: HttpRequest):
     hoy = now().date()
     rangos = [
