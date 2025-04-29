@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin_panel/
+Disallow: /kitchen/
+Disallow: /login/
+Disallow: /logout/
+Disallow: /media/
+
+Sitemap: https://pollofito.com/sitemap.xml
