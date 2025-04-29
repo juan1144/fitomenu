@@ -38,14 +38,14 @@
         <footer class="bg-dark text-white py-4 mt-auto">
           <div class="container">
             <div class="row">
-              <div class="col-md-4 mb-3">
+              <div class="col-md-3 mb-3">
                 <h5 class="text-uppercase">{{ info_restaurante.nombre|default:"Pollo Fito" }}</h5>
                 <p class="small">{{ info_restaurante.eslogan|default:"Sabor tradicional, servicio moderno." }}</p>
                 <p class="small">
                   {{ info_restaurante.ubicacion|default:"Santa Ana, El Salvador" }}
                 </p>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-3 mb-3">
                 <h6 class="text-uppercase">Enlaces</h6>
                 <ul class="list-unstyled small">
                   <li><a href="{% url 'menu:menu_lista' %}" class="text-white text-decoration-none">Menú</a></li>
@@ -53,8 +53,8 @@
                   <li><a href="{% url 'menu:conocenos' %}" class="text-white text-decoration-none">Conócenos</a></li>
                 </ul>
               </div>
-              <div class="col-md-4 mb-3">
-                <h6 class="text-uppercase">Síguenos</h6>
+              <div class="col-md-3 mb-3">
+                <h6 class="text-uppercase">Síguenos en Redes Sociales</h6>
                 {% if info_restaurante.facebook_url %}
                   <a href="{{ info_restaurante.facebook_url }}" target="_blank" class="text-white me-2">
                     <i class="bi bi-facebook"></i>
@@ -66,9 +66,18 @@
                   </a>
                 {% endif %}
               </div>
+              <div class="col-md-3 mb-3">
+                <h6 class="text-uppercase">Contactanos</h6>
+                  {% if info_restaurante.telefono %}
+                    <p class="mb-1"><i class="bi bi-telephone"></i> {{ info_restaurante.telefono }}</p>
+                  {% endif %}
+                  {% if info_restaurante.correo %}
+                    <p class="mb-0"><i class="bi bi-envelope"></i> {{ info_restaurante.correo }}</p>
+                  {% endif %}
+              </div>
             </div>
             <div class="text-center mt-3 small">
-              &copy; {{ now|date:"Y" }} {{ info_restaurante.nombre|default:"Pollo Fito" }}. Todos los derechos reservados.
+              &copy; 2025 {{ info_restaurante.nombre|default:"Pollo Fito" }}. Todos los derechos reservados.
             </div>
           </div>
         </footer>

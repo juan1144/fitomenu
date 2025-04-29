@@ -38,6 +38,8 @@ class RestauranteInfoForm(forms.ModelForm):
             "ubicacion",
             "facebook_url",
             "instagram_url",
+            "telefono",
+            "correo",
         ]
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
@@ -49,4 +51,6 @@ class RestauranteInfoForm(forms.ModelForm):
             "ubicacion": forms.TextInput(attrs={"class": "form-control"}),
             "facebook_url": forms.URLInput(attrs={"class": "form-control"}),
             "instagram_url": forms.URLInput(attrs={"class": "form-control"}),
+            "telefono": forms.TextInput(attrs={"class": "form-control"}),
+            "correo": forms.EmailInput(attrs={"class": "form-control"}),
         }

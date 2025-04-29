@@ -53,6 +53,8 @@ class RestauranteInfo(models.Model):
     iframe_ubicacion = models.TextField(blank=True)
     facebook_url = models.URLField(blank=True)
     instagram_url = models.URLField(blank=True)
+    telefono = models.CharField(max_length=20, blank=True)
+    correo = models.EmailField(blank=True)
 
     updated_at = models.DateTimeField(auto_now=True)
 
