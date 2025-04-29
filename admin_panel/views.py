@@ -32,7 +32,7 @@ def lista_productos(request):
         request,
         "admin_panel/lista.html",
         {
-            "page_title": "Administración de Productos",
+            "page_title": "Productos",
             "productos": productos,
             "categorias": categorias,
             "show_sidebar": False,
@@ -166,7 +166,7 @@ def lista_ordenes(request):
         request,
         "admin_panel/orden_lista.html",
         {
-            "page_title": "Administración de órdenes",
+            "page_title": "Órdenes",
             "ordenes": ordenes,
             "show_sidebar": False,
         },
@@ -238,7 +238,7 @@ def editar_info_restaurante(request):
         "admin_panel/info_restaurante_form.html",
         {
             "form": form,
-            "page_title": "Configuración del Restaurante",
+            "page_title": "Configuración",
             "show_sidebar": False,
         },
     )
