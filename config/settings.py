@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "admin_panel",
     "menu",
     "kitchen_panel",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
