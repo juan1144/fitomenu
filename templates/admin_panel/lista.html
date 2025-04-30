@@ -69,13 +69,13 @@
                     <a class="page-link" href="?page={{ productos.previous_page_number }}">Anterior</a>
                 </li>
                 {% endif %}
-    
+
                 <li class="page-item active">
                     <span class="page-link">
                         Página {{ productos.number }} de {{ productos.paginator.num_pages }}
                     </span>
                 </li>
-    
+
                 {% if productos.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ productos.next_page_number }}">Siguiente</a>
@@ -91,29 +91,58 @@
 
 {% include 'common/_modal.html' %}
 
+{#<script>#}
+{#    document.addEventListener("DOMContentLoaded", function() {#}
+{#        var modal = document.getElementById('genericModal');#}
+{#        modal.addEventListener('show.bs.modal', function (event) {#}
+{#            var button = event.relatedTarget;#}
+{##}
+{#            var modalTitle = button.getAttribute('data-modal-title');#}
+{#            var modalBody = button.getAttribute('data-modal-body');#}
+{#            var modalFormAction = button.getAttribute('data-modal-form-action');#}
+{#            var modalSubmitText = button.getAttribute('data-modal-submit-text');#}
+{##}
+{#            document.getElementById('genericModalLabel').textContent = modalTitle;#}
+{##}
+{#            var modalBodyElement = modal.querySelector('.modal-body');#}
+{#            modalBodyElement.innerHTML = modalBody;#}
+{##}
+{#            var modalForm = document.getElementById('modalForm');#}
+{#            if (modalForm) {#}
+{#                modalForm.action = modalFormAction;#}
+{#                modalForm.querySelector('button[type="submit"]').textContent = modalSubmitText;#}
+{#            }#}
+{#        });#}
+{#    });#}
+{#</script>#}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var modal = document.getElementById('genericModal');
-        modal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById('genericModal');
+    modal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
 
-            var modalTitle = button.getAttribute('data-modal-title');
-            var modalBody = button.getAttribute('data-modal-body');
-            var modalFormAction = button.getAttribute('data-modal-form-action');
-            var modalSubmitText = button.getAttribute('data-modal-submit-text');
+        const modalTitle = button.getAttribute('data-modal-title');
+        const modalBody = button.getAttribute('data-modal-body');
+        const modalFormAction = button.getAttribute('data-modal-form-action');
+        const modalSubmitText = button.getAttribute('data-modal-submit-text');
 
-            document.getElementById('genericModalLabel').textContent = modalTitle;
+        document.getElementById('genericModalLabel').textContent = modalTitle;
+        document.getElementById('genericModalBody').innerHTML = modalBody;
 
-            var modalBodyElement = modal.querySelector('.modal-body');
-            modalBodyElement.innerHTML = modalBody;
-
-            var modalForm = document.getElementById('modalForm');
-            if (modalForm) {
-                modalForm.action = modalFormAction;
-                modalForm.querySelector('button[type="submit"]').textContent = modalSubmitText;
-            }
-        });
+        // Inyectamos el formulario completo en el footer
+        document.getElementById('genericModalFooter').innerHTML = `
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <form id="modalForm" method="post" action="${modalFormAction}">
+                <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
+                <button type="submit" class="btn btn-danger">${modalSubmitText}</button>
+            </form>
+        `;
     });
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+});
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
