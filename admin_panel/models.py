@@ -34,7 +34,7 @@ class Orden(models.Model):
     orden = models.CharField(max_length=10)
     numero_mesa = models.IntegerField()
     tipo = models.CharField(
-        max_length=1, choices=[("A", "Atención"), ("P", "Para llevar")]
+        max_length=1, choices=[("A", "Restaurante"), ("P", "Para llevar")]
     )
     estado = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
