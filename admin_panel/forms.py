@@ -24,7 +24,7 @@ class CategoriaProductoForm(forms.ModelForm):
 class OrdenForm(forms.ModelForm):
     class Meta:
         model = Orden
-        fields = ["numero_mesa"]
+        fields = ["numero_mesa", "tipo"]
 
 
 class RestauranteInfoForm(forms.ModelForm):

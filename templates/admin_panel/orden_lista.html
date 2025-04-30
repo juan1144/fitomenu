@@ -17,6 +17,8 @@
         <thead>
             <tr>
                 <th>Orden</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
                 <th>Mesa</th>
                 <th>Estado</th>
                 <th></th>
@@ -26,6 +28,8 @@
             {% for orden in ordenes %}
             <tr id="orden-row-{{ orden.id }}">
                 <td>{{ orden.orden }}</td>
+                <td>{{ orden.created_at|date:"d/m/Y H:i" }}</td>
+                <td>{{ orden.get_tipo_display }}</td>
                 <td>{{ orden.numero_mesa }}</td>
                 <td>
                     <form method="post"

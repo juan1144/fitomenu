@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 
 
 class CategoriaProducto(models.Model):
@@ -29,16 +30,33 @@ class Producto(models.Model):
 
 
 class Orden(models.Model):
-    orden = models.IntegerField(unique=True)
+    # orden = models.IntegerField(unique=True)
+    orden = models.CharField(max_length=10)
     numero_mesa = models.IntegerField()
+    tipo = models.CharField(
+        max_length=1, choices=[("A", "Atención"), ("P", "Para llevar")]
+    )
     estado = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def generar_codigo(self):
+        hoy = now().date()
+        ultimo = Orden.objects.filter(created_at__date=hoy, tipo=self.tipo).order_by(
+            "-created_at"
+        )
+
+        if ultimo.exists():
+            ultimo_cod = ultimo.first().orden
+            ultimo_num = int(ultimo_cod[1:])
+            nuevo_num = ultimo_num + 1
+        else:
+            nuevo_num = 1
+        return f"{self.tipo}{nuevo_num}"
+
     def save(self, *args, **kwargs):
         if not self.orden:
-            last = Orden.objects.order_by("-orden").first()
-            self.orden = (last.orden + 1) if last else 1
+            self.orden = self.generar_codigo()
         super().save(*args, **kwargs)
 
     def __str__(self):

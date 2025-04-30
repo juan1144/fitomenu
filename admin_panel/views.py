@@ -190,7 +190,8 @@ def crear_orden(request):
         form = OrdenForm(request.POST)
         if form.is_valid():
             orden = form.save(commit=False)
-            orden.estado = True  # aseguramos que se cree activa
+            orden.tipo = form.cleaned_data["tipo"]
+            orden.estado = True
             orden.save()
             if request.headers.get("Hx-Request"):
                 response = HttpResponse()

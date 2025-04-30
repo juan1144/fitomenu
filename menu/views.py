@@ -1,6 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.views.decorators.http import require_POST
 
 from admin_panel.models import Orden, Producto, CategoriaProducto, RestauranteInfo
@@ -66,9 +67,13 @@ def menu_lista(request):
 
 @require_POST
 def validar_orden(request):
-    orden_id = request.POST.get("orden_id")
+    orden_id = request.POST.get("orden_id", "").strip().upper()
+    hoy = now().date()
 
-    orden = Orden.objects.filter(orden=orden_id, estado=True).first()
+    orden = Orden.objects.filter(
+        orden=orden_id, estado=True, created_at__date=hoy
+    ).first()
+
     if orden:
         request.session["orden_pk"] = orden.id
         html = "<div class='text-success'>Orden válida. Puedes cerrar este mensaje.</div><script>setTimeout(() => location.reload(), 1000);</script>"
